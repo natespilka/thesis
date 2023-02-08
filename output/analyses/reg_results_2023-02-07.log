@@ -1,0 +1,522 @@
+----------------------------------------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  /Users/nathanielhugospilka/Documents/Thesis/quant_work/output/analyses/reg_results_2023-02-07.log
+  log type:  text
+ opened on:   7 Feb 2023, 06:30:20
+
+. 
+. *******************************************************************************
+. ** simple regressions - crime_rate
+. *******************************************************************************
+. 
+. regress crime_rate dycd_site, robust
+
+Linear regression                               Number of obs     =     19,098
+                                                F(1, 19096)       =      13.65
+                                                Prob > F          =     0.0002
+                                                R-squared         =     0.0023
+                                                Root MSE          =     3911.3
+
+------------------------------------------------------------------------------
+             |               Robust
+  crime_rate | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+   dycd_site |   465.8541   126.0742     3.70   0.000     218.7375    712.9707
+       _cons |   543.9255   16.90493    32.18   0.000     510.7903    577.0607
+------------------------------------------------------------------------------
+
+. 
+. xtreg crime_rate dycd_site, i(geoid) fe vce(robust)
+
+Fixed-effects (within) regression               Number of obs     =     19,098
+Group variable: geoid                           Number of groups  =      6,366
+
+R-squared:                                      Obs per group:
+     Within  = 0.0004                                         min =          3
+     Between = 0.0053                                         avg =        3.0
+     Overall = 0.0023                                         max =          3
+
+                                                F(1,6365)         =       7.37
+corr(u_i, Xb) = -0.0890                         Prob > F          =     0.0066
+
+                              (Std. err. adjusted for 6,366 clusters in geoid)
+------------------------------------------------------------------------------
+             |               Robust
+  crime_rate | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+   dycd_site |  -241.0148   88.77484    -2.71   0.007    -415.0434   -66.98622
+       _cons |   684.5368   17.65921    38.76   0.000     649.9188    719.1548
+-------------+----------------------------------------------------------------
+     sigma_u |  3170.4418
+     sigma_e |  2826.5922
+         rho |  .55714873   (fraction of variance due to u_i)
+------------------------------------------------------------------------------
+
+. 
+. xtreg crime_rate dycd_site i.year, i(geoid) fe vce(robust)
+
+Fixed-effects (within) regression               Number of obs     =     19,098
+Group variable: geoid                           Number of groups  =      6,366
+
+R-squared:                                      Obs per group:
+     Within  = 0.0032                                         min =          3
+     Between = 0.0053                                         avg =        3.0
+     Overall = 0.0003                                         max =          3
+
+                                                F(3,6365)         =      12.47
+corr(u_i, Xb) = -0.0200                         Prob > F          =     0.0000
+
+                              (Std. err. adjusted for 6,366 clusters in geoid)
+------------------------------------------------------------------------------
+             |               Robust
+  crime_rate | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+   dycd_site |  -91.24847   94.03876    -0.97   0.332    -275.5961    93.09917
+             |
+        year |
+       2020  |  -260.8125   67.42189    -3.87   0.000    -392.9821   -128.6429
+       2021  |  -276.3558   55.53735    -4.98   0.000    -385.2277   -167.4839
+             |
+       _cons |   833.8012   38.95195    21.41   0.000     757.4422    910.1601
+-------------+----------------------------------------------------------------
+     sigma_u |  3165.5644
+     sigma_e |   2822.741
+         rho |  .55706181   (fraction of variance due to u_i)
+------------------------------------------------------------------------------
+
+. 
+. *******************************************************************************
+. ** regression with economic controls - crime_rate
+. *******************************************************************************
+. 
+. xtreg crime_rate dycd_site ///
+> imputed_mhhi imputed_prcnt_unemp ///
+> i.year, i(geoid) fe vce(robust)
+
+Fixed-effects (within) regression               Number of obs     =     19,098
+Group variable: geoid                           Number of groups  =      6,366
+
+R-squared:                                      Obs per group:
+     Within  = 0.0034                                         min =          3
+     Between = 0.0000                                         avg =        3.0
+     Overall = 0.0010                                         max =          3
+
+                                                F(5,6365)         =      14.79
+corr(u_i, Xb) = -0.0102                         Prob > F          =     0.0000
+
+                                     (Std. err. adjusted for 6,366 clusters in geoid)
+-------------------------------------------------------------------------------------
+                    |               Robust
+         crime_rate | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+--------------------+----------------------------------------------------------------
+          dycd_site |  -91.90043   93.87592    -0.98   0.328    -275.9288    92.12799
+       imputed_mhhi |  -.0010246   .0013612    -0.75   0.452     -.003693    .0016438
+imputed_prcnt_unemp |   7.440883   9.156735     0.81   0.416     -10.5094    25.39117
+                    |
+               year |
+              2020  |  -261.2126   71.30154    -3.66   0.000    -400.9877   -121.4376
+              2021  |  -280.2533   67.46691    -4.15   0.000    -412.5112   -147.9955
+                    |
+              _cons |   862.8767   121.2664     7.12   0.000     625.1538      1100.6
+--------------------+----------------------------------------------------------------
+            sigma_u |  3163.6431
+            sigma_e |   2822.747
+                rho |  .55676112   (fraction of variance due to u_i)
+-------------------------------------------------------------------------------------
+
+. 
+. *******************************************************************************
+. ** regression with demographic controls - crime_rate
+. *******************************************************************************
+. 
+. xtreg crime_rate dycd_site ///
+> total_pop /* prcnt_white */ prcnt_black prcnt_hisp prcnt_asian prcnt_all_other prcnt_yth_yng_adlt ///
+> i.year, i(geoid) fe vce(robust)
+
+Fixed-effects (within) regression               Number of obs     =     19,098
+Group variable: geoid                           Number of groups  =      6,366
+
+R-squared:                                      Obs per group:
+     Within  = 0.0065                                         min =          3
+     Between = 0.0008                                         avg =        3.0
+     Overall = 0.0013                                         max =          3
+
+                                                F(9,6365)         =      18.61
+corr(u_i, Xb) = -0.1524                         Prob > F          =     0.0000
+
+                                    (Std. err. adjusted for 6,366 clusters in geoid)
+------------------------------------------------------------------------------------
+                   |               Robust
+        crime_rate | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+-------------------+----------------------------------------------------------------
+         dycd_site |  -85.23846   98.83468    -0.86   0.388    -278.9877    108.5108
+         total_pop |  -.4981145   .0822651    -6.05   0.000    -.6593817   -.3368472
+       prcnt_black |  -3.386347   21.59061    -0.16   0.875    -45.71122    38.93852
+        prcnt_hisp |   13.59935   10.47587     1.30   0.194    -6.936885    34.13559
+       prcnt_asian |   24.33684   20.18343     1.21   0.228    -15.22947    63.90316
+   prcnt_all_other |   28.86761   28.51155     1.01   0.311    -27.02464    84.75986
+prcnt_yth_yng_adlt |   9.460236   10.97602     0.86   0.389    -12.05646    30.97693
+                   |
+              year |
+             2020  |   -269.374   78.15453    -3.45   0.001    -422.5832   -116.1648
+             2021  |   -260.468   69.10146    -3.77   0.000    -395.9301   -125.0058
+                   |
+             _cons |   658.9812   384.6131     1.71   0.087    -94.99008    1412.952
+-------------------+----------------------------------------------------------------
+           sigma_u |  3202.8562
+           sigma_e |  2818.7409
+               rho |  .56353109   (fraction of variance due to u_i)
+------------------------------------------------------------------------------------
+
+. 
+. *******************************************************************************
+. ** regression with education controls - crime_rate
+. *******************************************************************************
+. 
+. xtreg crime_rate dycd_site ///
+> /*prcnt_hs_no_ba_deg */ prcnt_hs_no_ba_deg prcnt_ba_or_hghr_deg ///
+> i.year, i(geoid) fe vce(robust)
+
+Fixed-effects (within) regression               Number of obs     =     19,098
+Group variable: geoid                           Number of groups  =      6,366
+
+R-squared:                                      Obs per group:
+     Within  = 0.0041                                         min =          3
+     Between = 0.0008                                         avg =        3.0
+     Overall = 0.0014                                         max =          3
+
+                                                F(5,6365)         =      10.57
+corr(u_i, Xb) = -0.0635                         Prob > F          =     0.0000
+
+                                      (Std. err. adjusted for 6,366 clusters in geoid)
+--------------------------------------------------------------------------------------
+                     |               Robust
+          crime_rate | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+---------------------+----------------------------------------------------------------
+           dycd_site |  -91.62015   94.12025    -0.97   0.330    -276.1275    92.88723
+  prcnt_hs_no_ba_deg |  -12.84809   10.25516    -1.25   0.210    -32.95166    7.255473
+prcnt_ba_or_hghr_deg |  -20.03007   12.95471    -1.55   0.122    -45.42567    5.365533
+                     |
+                year |
+               2020  |  -247.3822   61.77149    -4.00   0.000    -368.4751   -126.2892
+               2021  |  -253.6596   46.15571    -5.50   0.000    -344.1404   -163.1789
+                     |
+               _cons |   2159.925   930.6398     2.32   0.020     335.5574    3984.292
+---------------------+----------------------------------------------------------------
+             sigma_u |  3169.5606
+             sigma_e |  2821.6929
+                 rho |   .5578675   (fraction of variance due to u_i)
+--------------------------------------------------------------------------------------
+
+. 
+. *******************************************************************************
+. ** regression with all controls (full force) - crime_rate
+. *******************************************************************************
+. 
+. xtreg crime_rate dycd_site ///
+> imputed_mhhi imputed_prcnt_unemp ///
+> total_pop /* prcnt_white */ prcnt_black prcnt_hisp prcnt_asian prcnt_all_other prcnt_yth_yng_adlt ///
+> /*prcnt_hs_no_ba_deg */ prcnt_hs_no_ba_deg prcnt_ba_or_hghr_deg ///
+> i.year, i(geoid) fe vce(robust)
+
+Fixed-effects (within) regression               Number of obs     =     19,098
+Group variable: geoid                           Number of groups  =      6,366
+
+R-squared:                                      Obs per group:
+     Within  = 0.0073                                         min =          3
+     Between = 0.0010                                         avg =        3.0
+     Overall = 0.0015                                         max =          3
+
+                                                F(13,6365)        =      21.15
+corr(u_i, Xb) = -0.1783                         Prob > F          =     0.0000
+
+                                      (Std. err. adjusted for 6,366 clusters in geoid)
+--------------------------------------------------------------------------------------
+                     |               Robust
+          crime_rate | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+---------------------+----------------------------------------------------------------
+           dycd_site |  -84.57082   99.18297    -0.85   0.394    -279.0028    109.8612
+        imputed_mhhi |   .0008896   .0014986     0.59   0.553    -.0020481    .0038273
+ imputed_prcnt_unemp |   7.536849   8.990344     0.84   0.402    -10.08725    25.16095
+           total_pop |  -.5118684   .0942495    -5.43   0.000    -.6966292   -.3271077
+         prcnt_black |  -6.285151   22.16639    -0.28   0.777    -49.73874    37.16844
+          prcnt_hisp |   9.879814   9.050785     1.09   0.275    -7.862772     27.6224
+         prcnt_asian |   22.41695    19.8569     1.13   0.259    -16.50926    61.34317
+     prcnt_all_other |   25.55013   27.36871     0.93   0.351    -28.10176    79.20202
+  prcnt_yth_yng_adlt |   7.722107   10.28268     0.75   0.453     -12.4354    27.87962
+  prcnt_hs_no_ba_deg |  -9.023642   7.447545    -1.21   0.226    -23.62334    5.576054
+prcnt_ba_or_hghr_deg |  -17.21293    11.2027    -1.54   0.124    -39.17399    4.748139
+                     |
+                year |
+               2020  |  -262.4735   79.05234    -3.32   0.001    -417.4427   -107.5043
+               2021  |  -253.3649   76.45736    -3.31   0.001    -403.2471   -103.4828
+                     |
+               _cons |   1835.699   752.9258     2.44   0.015     359.7112    3311.687
+---------------------+----------------------------------------------------------------
+             sigma_u |  3217.1745
+             sigma_e |  2818.1296
+                 rho |  .56583065   (fraction of variance due to u_i)
+--------------------------------------------------------------------------------------
+
+. 
+. *******************************************************************************
+. ** simple regressions - violent_crime_rate
+. *******************************************************************************
+. 
+. regress violent_crime_rate dycd_site, robust
+
+Linear regression                               Number of obs     =     19,098
+                                                F(1, 19096)       =      16.09
+                                                Prob > F          =     0.0001
+                                                R-squared         =     0.0026
+                                                Root MSE          =       1111
+
+------------------------------------------------------------------------------
+             |               Robust
+violent_cr~e | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+   dycd_site |   143.1822   35.69986     4.01   0.000     73.20729     213.157
+       _cons |   158.0083   4.856889    32.53   0.000     148.4884    167.5283
+------------------------------------------------------------------------------
+
+. 
+. xtreg violent_crime_rate dycd_site, i(geoid) fe vce(robust)
+
+Fixed-effects (within) regression               Number of obs     =     19,098
+Group variable: geoid                           Number of groups  =      6,366
+
+R-squared:                                      Obs per group:
+     Within  = 0.0001                                         min =          3
+     Between = 0.0053                                         avg =        3.0
+     Overall = 0.0026                                         max =          3
+
+                                                F(1,6365)         =      11.65
+corr(u_i, Xb) = -0.0776                         Prob > F          =     0.0006
+
+                              (Std. err. adjusted for 6,366 clusters in geoid)
+------------------------------------------------------------------------------
+             |               Robust
+violent_cr~e | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+   dycd_site |  -37.17577   10.88955    -3.41   0.001    -58.52295   -15.82859
+       _cons |   193.8854   2.166164    89.51   0.000      189.639    198.1318
+-------------+----------------------------------------------------------------
+     sigma_u |  928.25509
+     sigma_e |  752.96093
+         rho |  .60314496   (fraction of variance due to u_i)
+------------------------------------------------------------------------------
+
+. 
+. xtreg violent_crime_rate dycd_site i.year, i(geoid) fe vce(robust)
+
+Fixed-effects (within) regression               Number of obs     =     19,098
+Group variable: geoid                           Number of groups  =      6,366
+
+R-squared:                                      Obs per group:
+     Within  = 0.0027                                         min =          3
+     Between = 0.0053                                         avg =        3.0
+     Overall = 0.0008                                         max =          3
+
+                                                F(3,6365)         =      12.34
+corr(u_i, Xb) = 0.0001                          Prob > F          =     0.0000
+
+                              (Std. err. adjusted for 6,366 clusters in geoid)
+------------------------------------------------------------------------------
+             |               Robust
+violent_cr~e | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+   dycd_site |   .1638539   14.92876     0.01   0.991    -29.10154    29.42925
+             |
+        year |
+       2020  |  -64.19352   17.62764    -3.64   0.000    -98.74964    -29.6374
+       2021  |  -71.58254   15.26948    -4.69   0.000    -101.5159   -41.64922
+             |
+       _cons |   231.7164   9.018199    25.69   0.000     214.0377    249.3951
+-------------+----------------------------------------------------------------
+     sigma_u |  927.19336
+     sigma_e |  752.03545
+         rho |  .60318585   (fraction of variance due to u_i)
+------------------------------------------------------------------------------
+
+. 
+. *******************************************************************************
+. ** regression with economic controls - violent_crime_rate
+. *******************************************************************************
+. 
+. xtreg violent_crime_rate dycd_site ///
+> imputed_mhhi imputed_prcnt_unemp ///
+> i.year, i(geoid) fe vce(robust)
+
+Fixed-effects (within) regression               Number of obs     =     19,098
+Group variable: geoid                           Number of groups  =      6,366
+
+R-squared:                                      Obs per group:
+     Within  = 0.0029                                         min =          3
+     Between = 0.0043                                         avg =        3.0
+     Overall = 0.0033                                         max =          3
+
+                                                F(5,6365)         =      18.36
+corr(u_i, Xb) = 0.0233                          Prob > F          =     0.0000
+
+                                     (Std. err. adjusted for 6,366 clusters in geoid)
+-------------------------------------------------------------------------------------
+                    |               Robust
+ violent_crime_rate | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+--------------------+----------------------------------------------------------------
+          dycd_site |   .0075829   14.87343     0.00   1.000    -29.14934    29.16451
+       imputed_mhhi |  -.0005982    .000308    -1.94   0.052     -.001202    5.58e-06
+imputed_prcnt_unemp |    .492011   2.452394     0.20   0.841    -4.315507    5.299529
+                    |
+               year |
+              2020  |  -63.09782   18.72515    -3.37   0.001    -99.80543   -26.39021
+              2021  |  -69.39327   18.59597    -3.73   0.000    -105.8476   -32.93891
+                    |
+              _cons |   273.6073   29.38394     9.31   0.000     216.0049    331.2097
+--------------------+----------------------------------------------------------------
+            sigma_u |   925.8145
+            sigma_e |  752.04558
+                rho |  .60246676   (fraction of variance due to u_i)
+-------------------------------------------------------------------------------------
+
+. 
+. *******************************************************************************
+. ** regression with demographic controls - violent_crime_rate
+. *******************************************************************************
+. 
+. xtreg violent_crime_rate dycd_site ///
+> total_pop /* prcnt_white */ prcnt_black prcnt_hisp prcnt_asian prcnt_all_other prcnt_yth_yng_adlt ///
+> i.year, i(geoid) fe vce(robust)
+
+Fixed-effects (within) regression               Number of obs     =     19,098
+Group variable: geoid                           Number of groups  =      6,366
+
+R-squared:                                      Obs per group:
+     Within  = 0.0066                                         min =          3
+     Between = 0.0001                                         avg =        3.0
+     Overall = 0.0003                                         max =          3
+
+                                                F(9,6365)         =      24.55
+corr(u_i, Xb) = -0.1730                         Prob > F          =     0.0000
+
+                                    (Std. err. adjusted for 6,366 clusters in geoid)
+------------------------------------------------------------------------------------
+                   |               Robust
+violent_crime_rate | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+-------------------+----------------------------------------------------------------
+         dycd_site |   1.760276   17.14057     0.10   0.918    -31.84101    35.36156
+         total_pop |  -.1293049     .02132    -6.06   0.000    -.1710993   -.0875104
+       prcnt_black |  -1.712161   6.188955    -0.28   0.782     -13.8446    10.42027
+        prcnt_hisp |    2.57207   3.334875     0.77   0.441    -3.965408    9.109547
+       prcnt_asian |   7.550867   5.317082     1.42   0.156    -2.872405    17.97414
+   prcnt_all_other |   7.213218   6.958943     1.04   0.300    -6.428653    20.85509
+prcnt_yth_yng_adlt |   3.183465   2.956601     1.08   0.282    -2.612469      8.9794
+                   |
+              year |
+             2020  |  -66.60355   20.24719    -3.29   0.001    -106.2949   -26.91223
+             2021  |  -67.91921   19.05689    -3.56   0.000    -105.2771   -30.56128
+                   |
+             _cons |   201.5284   163.2221     1.23   0.217    -118.4419    521.4987
+-------------------+----------------------------------------------------------------
+           sigma_u |  942.50878
+           sigma_e |  750.77038
+               rho |  .61180143   (fraction of variance due to u_i)
+------------------------------------------------------------------------------------
+
+. 
+. *******************************************************************************
+. ** regression with education controls - violent_crime_rate
+. *******************************************************************************
+. 
+. xtreg violent_crime_rate dycd_site ///
+> /*prcnt_hs_no_ba_deg */ prcnt_hs_no_ba_deg prcnt_ba_or_hghr_deg ///
+> i.year, i(geoid) fe vce(robust)
+
+Fixed-effects (within) regression               Number of obs     =     19,098
+Group variable: geoid                           Number of groups  =      6,366
+
+R-squared:                                      Obs per group:
+     Within  = 0.0047                                         min =          3
+     Between = 0.0033                                         avg =        3.0
+     Overall = 0.0034                                         max =          3
+
+                                                F(5,6365)         =       8.86
+corr(u_i, Xb) = -0.0644                         Prob > F          =     0.0000
+
+                                      (Std. err. adjusted for 6,366 clusters in geoid)
+--------------------------------------------------------------------------------------
+                     |               Robust
+  violent_crime_rate | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+---------------------+----------------------------------------------------------------
+           dycd_site |  -.1527096   14.85267    -0.01   0.992    -29.26895    28.96353
+  prcnt_hs_no_ba_deg |  -5.764452   3.568633    -1.62   0.106    -12.76017     1.23127
+prcnt_ba_or_hghr_deg |  -7.870273   3.846928    -2.05   0.041    -15.41155   -.3289988
+                     |
+                year |
+               2020  |  -59.15134   16.52093    -3.58   0.000    -91.53793   -26.76475
+               2021  |  -63.05484   12.95673    -4.87   0.000     -88.4544   -37.65528
+                     |
+               _cons |   784.6961    303.107     2.59   0.010     190.5043    1378.888
+---------------------+----------------------------------------------------------------
+             sigma_u |  927.84138
+             sigma_e |  751.34785
+                 rho |  .60395794   (fraction of variance due to u_i)
+--------------------------------------------------------------------------------------
+
+. 
+. *******************************************************************************
+. ** regression with all controls (full force) - violent_crime_rate
+. *******************************************************************************
+. 
+. xtreg violent_crime_rate dycd_site ///
+> imputed_mhhi imputed_prcnt_unemp ///
+> total_pop /* prcnt_white */ prcnt_black prcnt_hisp prcnt_asian prcnt_all_other prcnt_yth_yng_adlt ///
+> /*prcnt_hs_no_ba_deg */ prcnt_hs_no_ba_deg prcnt_ba_or_hghr_deg ///
+> i.year, i(geoid) fe vce(robust)
+
+Fixed-effects (within) regression               Number of obs     =     19,098
+Group variable: geoid                           Number of groups  =      6,366
+
+R-squared:                                      Obs per group:
+     Within  = 0.0082                                         min =          3
+     Between = 0.0006                                         avg =        3.0
+     Overall = 0.0010                                         max =          3
+
+                                                F(13,6365)        =      20.09
+corr(u_i, Xb) = -0.1981                         Prob > F          =     0.0000
+
+                                      (Std. err. adjusted for 6,366 clusters in geoid)
+--------------------------------------------------------------------------------------
+                     |               Robust
+  violent_crime_rate | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+---------------------+----------------------------------------------------------------
+           dycd_site |   1.826255    17.1761     0.11   0.915    -31.84468    35.49719
+        imputed_mhhi |   6.67e-06   .0004201     0.02   0.987    -.0008168    .0008301
+ imputed_prcnt_unemp |   .4502998   2.400392     0.19   0.851    -4.255278    5.155877
+           total_pop |  -.1307441   .0245375    -5.33   0.000    -.1788458   -.0826423
+         prcnt_black |  -2.829032   6.400755    -0.44   0.659    -15.37667    9.718603
+          prcnt_hisp |   .9959316   3.226531     0.31   0.758    -5.329156    7.321019
+         prcnt_asian |   6.622595   5.243024     1.26   0.207    -3.655498    16.90069
+     prcnt_all_other |   5.935568   6.675331     0.89   0.374    -7.150329    19.02146
+  prcnt_yth_yng_adlt |   2.605519   2.720556     0.96   0.338    -2.727688    7.938725
+  prcnt_hs_no_ba_deg |  -4.765652   3.136993    -1.52   0.129    -10.91521    1.383912
+prcnt_ba_or_hghr_deg |  -7.461387   3.685149    -2.02   0.043    -14.68552    -.237254
+                     |
+                year |
+               2020  |  -62.00686   20.82746    -2.98   0.003    -102.8357   -21.17802
+               2021  |  -60.41822   20.99646    -2.88   0.004    -101.5783    -19.2581
+                     |
+               _cons |   784.6766   347.2531     2.26   0.024     103.9435     1465.41
+---------------------+----------------------------------------------------------------
+             sigma_u |    946.944
+             sigma_e |  750.26753
+                 rho |  .61434659   (fraction of variance due to u_i)
+--------------------------------------------------------------------------------------
+
+. 
+. 
+. log close
+      name:  <unnamed>
+       log:  /Users/nathanielhugospilka/Documents/Thesis/quant_work/output/analyses/reg_results_2023-02-07.log
+  log type:  text
+ closed on:   7 Feb 2023, 06:30:24
+----------------------------------------------------------------------------------------------------------------

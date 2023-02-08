@@ -1,0 +1,525 @@
+{smcl}
+{com}{sf}{ul off}{txt}{.-}
+      name:  {res}<unnamed>
+       {txt}log:  {res}/Users/nathanielhugospilka/Documents/Thesis/quant_work/output/analyses/reg_results_2023-02-07.smcl
+  {txt}log type:  {res}smcl
+ {txt}opened on:  {res} 7 Feb 2023, 06:10:44
+{txt}
+{com}. 
+. *******************************************************************************
+. ** simple regressions - crime_rate
+. *******************************************************************************
+. 
+. regress crime_rate dycd_site, robust
+
+{txt}Linear regression                               Number of obs     = {res}    19,098
+                                                {txt}F(1, 19096)       =  {res}    13.65
+                                                {txt}Prob > F          = {res}    0.0002
+                                                {txt}R-squared         = {res}    0.0023
+                                                {txt}Root MSE          =    {res} 3911.3
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26}    Robust
+{col 1}  crime_rate{col 14}{c |} Coefficient{col 26}  std. err.{col 38}      t{col 46}   P>|t|{col 54}     [95% con{col 67}f. interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 3}dycd_site {c |}{col 14}{res}{space 2} 465.8541{col 26}{space 2} 126.0742{col 37}{space 1}    3.70{col 46}{space 3}0.000{col 54}{space 4} 218.7375{col 67}{space 3} 712.9707
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2} 543.9255{col 26}{space 2} 16.90493{col 37}{space 1}   32.18{col 46}{space 3}0.000{col 54}{space 4} 510.7903{col 67}{space 3} 577.0607
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. 
+. xtreg crime_rate dycd_site, i(geoid) fe vce(robust)
+{res}
+{txt}Fixed-effects (within) regression{col 49}Number of obs{col 67}={col 69}{res}    19,098
+{txt}Group variable: {res}geoid{txt}{col 49}Number of groups{col 67}={col 69}{res}     6,366
+
+{txt}R-squared:{col 49}Obs per group:
+     Within  = {res}0.0004{col 63}{txt}min{col 67}={col 69}{res}         3
+{txt}     Between = {res}0.0053{col 63}{txt}avg{col 67}={col 69}{res}       3.0
+{txt}     Overall = {res}0.0023{col 63}{txt}max{col 67}={col 69}{res}         3
+
+{txt}{col 49}F({res}1{txt},{res}6365{txt}){col 67}={col 70}{res}     7.37
+{txt}corr(u_i, Xb) = {res}-0.0890{txt}{col 49}Prob > F{col 67}={col 73}{res}0.0066
+
+{txt}{ralign 78:(Std. err. adjusted for {res:6,366} clusters in geoid)}
+{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26}    Robust
+{col 1}  crime_rate{col 14}{c |} Coefficient{col 26}  std. err.{col 38}      t{col 46}   P>|t|{col 54}     [95% con{col 67}f. interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 3}dycd_site {c |}{col 14}{res}{space 2}-241.0148{col 26}{space 2} 88.77484{col 37}{space 1}   -2.71{col 46}{space 3}0.007{col 54}{space 4}-415.0434{col 67}{space 3}-66.98622
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2} 684.5368{col 26}{space 2} 17.65921{col 37}{space 1}   38.76{col 46}{space 3}0.000{col 54}{space 4} 649.9188{col 67}{space 3} 719.1548
+{txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+     sigma_u {c |} {res} 3170.4418
+     {txt}sigma_e {c |} {res} 2826.5922
+         {txt}rho {c |} {res} .55714873{txt}   (fraction of variance due to u_i)
+{hline 13}{c BT}{hline 64}
+
+{com}. 
+. xtreg crime_rate dycd_site i.year, i(geoid) fe vce(robust)
+{res}
+{txt}Fixed-effects (within) regression{col 49}Number of obs{col 67}={col 69}{res}    19,098
+{txt}Group variable: {res}geoid{txt}{col 49}Number of groups{col 67}={col 69}{res}     6,366
+
+{txt}R-squared:{col 49}Obs per group:
+     Within  = {res}0.0032{col 63}{txt}min{col 67}={col 69}{res}         3
+{txt}     Between = {res}0.0053{col 63}{txt}avg{col 67}={col 69}{res}       3.0
+{txt}     Overall = {res}0.0003{col 63}{txt}max{col 67}={col 69}{res}         3
+
+{txt}{col 49}F({res}3{txt},{res}6365{txt}){col 67}={col 70}{res}    12.47
+{txt}corr(u_i, Xb) = {res}-0.0200{txt}{col 49}Prob > F{col 67}={col 73}{res}0.0000
+
+{txt}{ralign 78:(Std. err. adjusted for {res:6,366} clusters in geoid)}
+{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26}    Robust
+{col 1}  crime_rate{col 14}{c |} Coefficient{col 26}  std. err.{col 38}      t{col 46}   P>|t|{col 54}     [95% con{col 67}f. interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 3}dycd_site {c |}{col 14}{res}{space 2}-91.24847{col 26}{space 2} 94.03876{col 37}{space 1}   -0.97{col 46}{space 3}0.332{col 54}{space 4}-275.5961{col 67}{space 3} 93.09917
+{txt}{space 12} {c |}
+{space 8}year {c |}
+{space 7}2020  {c |}{col 14}{res}{space 2}-260.8125{col 26}{space 2} 67.42189{col 37}{space 1}   -3.87{col 46}{space 3}0.000{col 54}{space 4}-392.9821{col 67}{space 3}-128.6429
+{txt}{space 7}2021  {c |}{col 14}{res}{space 2}-276.3558{col 26}{space 2} 55.53735{col 37}{space 1}   -4.98{col 46}{space 3}0.000{col 54}{space 4}-385.2277{col 67}{space 3}-167.4839
+{txt}{space 12} {c |}
+{space 7}_cons {c |}{col 14}{res}{space 2} 833.8012{col 26}{space 2} 38.95195{col 37}{space 1}   21.41{col 46}{space 3}0.000{col 54}{space 4} 757.4422{col 67}{space 3} 910.1601
+{txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+     sigma_u {c |} {res} 3165.5644
+     {txt}sigma_e {c |} {res}  2822.741
+         {txt}rho {c |} {res} .55706181{txt}   (fraction of variance due to u_i)
+{hline 13}{c BT}{hline 64}
+
+{com}. 
+. *******************************************************************************
+. ** regression with economic controls - crime_rate
+. *******************************************************************************
+. 
+. xtreg crime_rate dycd_site ///
+> imputed_mhhi imputed_prcnt_unemp ///
+> i.year, i(geoid) fe vce(robust)
+{res}
+{txt}Fixed-effects (within) regression{col 49}Number of obs{col 67}={col 69}{res}    19,098
+{txt}Group variable: {res}geoid{txt}{col 49}Number of groups{col 67}={col 69}{res}     6,366
+
+{txt}R-squared:{col 49}Obs per group:
+     Within  = {res}0.0034{col 63}{txt}min{col 67}={col 69}{res}         3
+{txt}     Between = {res}0.0000{col 63}{txt}avg{col 67}={col 69}{res}       3.0
+{txt}     Overall = {res}0.0010{col 63}{txt}max{col 67}={col 69}{res}         3
+
+{txt}{col 49}F({res}5{txt},{res}6365{txt}){col 67}={col 70}{res}    14.79
+{txt}corr(u_i, Xb) = {res}-0.0102{txt}{col 49}Prob > F{col 67}={col 73}{res}0.0000
+
+{txt}{ralign 85:(Std. err. adjusted for {res:6,366} clusters in geoid)}
+{hline 20}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 21}{c |}{col 33}    Robust
+{col 1}         crime_rate{col 21}{c |} Coefficient{col 33}  std. err.{col 45}      t{col 53}   P>|t|{col 61}     [95% con{col 74}f. interval]
+{hline 20}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 10}dycd_site {c |}{col 21}{res}{space 2}-91.90043{col 33}{space 2} 93.87592{col 44}{space 1}   -0.98{col 53}{space 3}0.328{col 61}{space 4}-275.9288{col 74}{space 3} 92.12799
+{txt}{space 7}imputed_mhhi {c |}{col 21}{res}{space 2}-.0010246{col 33}{space 2} .0013612{col 44}{space 1}   -0.75{col 53}{space 3}0.452{col 61}{space 4} -.003693{col 74}{space 3} .0016438
+{txt}imputed_prcnt_unemp {c |}{col 21}{res}{space 2} 7.440883{col 33}{space 2} 9.156735{col 44}{space 1}    0.81{col 53}{space 3}0.416{col 61}{space 4} -10.5094{col 74}{space 3} 25.39117
+{txt}{space 19} {c |}
+{space 15}year {c |}
+{space 14}2020  {c |}{col 21}{res}{space 2}-261.2126{col 33}{space 2} 71.30154{col 44}{space 1}   -3.66{col 53}{space 3}0.000{col 61}{space 4}-400.9877{col 74}{space 3}-121.4376
+{txt}{space 14}2021  {c |}{col 21}{res}{space 2}-280.2533{col 33}{space 2} 67.46691{col 44}{space 1}   -4.15{col 53}{space 3}0.000{col 61}{space 4}-412.5112{col 74}{space 3}-147.9955
+{txt}{space 19} {c |}
+{space 14}_cons {c |}{col 21}{res}{space 2} 862.8767{col 33}{space 2} 121.2664{col 44}{space 1}    7.12{col 53}{space 3}0.000{col 61}{space 4} 625.1538{col 74}{space 3}   1100.6
+{txt}{hline 20}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+            sigma_u {c |} {res} 3163.6431
+            {txt}sigma_e {c |} {res}  2822.747
+                {txt}rho {c |} {res} .55676112{txt}   (fraction of variance due to u_i)
+{hline 20}{c BT}{hline 64}
+
+{com}. 
+. *******************************************************************************
+. ** regression with demographic controls - crime_rate
+. *******************************************************************************
+. 
+. xtreg crime_rate dycd_site ///
+> total_pop /* prcnt_white */ prcnt_black prcnt_hisp prcnt_asian prcnt_all_other prcnt_yth_yng_adlt ///
+> i.year, i(geoid) fe vce(robust)
+{res}
+{txt}Fixed-effects (within) regression{col 49}Number of obs{col 67}={col 69}{res}    19,098
+{txt}Group variable: {res}geoid{txt}{col 49}Number of groups{col 67}={col 69}{res}     6,366
+
+{txt}R-squared:{col 49}Obs per group:
+     Within  = {res}0.0065{col 63}{txt}min{col 67}={col 69}{res}         3
+{txt}     Between = {res}0.0008{col 63}{txt}avg{col 67}={col 69}{res}       3.0
+{txt}     Overall = {res}0.0013{col 63}{txt}max{col 67}={col 69}{res}         3
+
+{txt}{col 49}F({res}9{txt},{res}6365{txt}){col 67}={col 70}{res}    18.61
+{txt}corr(u_i, Xb) = {res}-0.1524{txt}{col 49}Prob > F{col 67}={col 73}{res}0.0000
+
+{txt}{ralign 84:(Std. err. adjusted for {res:6,366} clusters in geoid)}
+{hline 19}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 20}{c |}{col 32}    Robust
+{col 1}        crime_rate{col 20}{c |} Coefficient{col 32}  std. err.{col 44}      t{col 52}   P>|t|{col 60}     [95% con{col 73}f. interval]
+{hline 19}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 9}dycd_site {c |}{col 20}{res}{space 2}-85.23846{col 32}{space 2} 98.83468{col 43}{space 1}   -0.86{col 52}{space 3}0.388{col 60}{space 4}-278.9877{col 73}{space 3} 108.5108
+{txt}{space 9}total_pop {c |}{col 20}{res}{space 2}-.4981145{col 32}{space 2} .0822651{col 43}{space 1}   -6.05{col 52}{space 3}0.000{col 60}{space 4}-.6593817{col 73}{space 3}-.3368472
+{txt}{space 7}prcnt_black {c |}{col 20}{res}{space 2}-3.386347{col 32}{space 2} 21.59061{col 43}{space 1}   -0.16{col 52}{space 3}0.875{col 60}{space 4}-45.71122{col 73}{space 3} 38.93852
+{txt}{space 8}prcnt_hisp {c |}{col 20}{res}{space 2} 13.59935{col 32}{space 2} 10.47587{col 43}{space 1}    1.30{col 52}{space 3}0.194{col 60}{space 4}-6.936885{col 73}{space 3} 34.13559
+{txt}{space 7}prcnt_asian {c |}{col 20}{res}{space 2} 24.33684{col 32}{space 2} 20.18343{col 43}{space 1}    1.21{col 52}{space 3}0.228{col 60}{space 4}-15.22947{col 73}{space 3} 63.90316
+{txt}{space 3}prcnt_all_other {c |}{col 20}{res}{space 2} 28.86761{col 32}{space 2} 28.51155{col 43}{space 1}    1.01{col 52}{space 3}0.311{col 60}{space 4}-27.02464{col 73}{space 3} 84.75986
+{txt}prcnt_yth_yng_adlt {c |}{col 20}{res}{space 2} 9.460236{col 32}{space 2} 10.97602{col 43}{space 1}    0.86{col 52}{space 3}0.389{col 60}{space 4}-12.05646{col 73}{space 3} 30.97693
+{txt}{space 18} {c |}
+{space 14}year {c |}
+{space 13}2020  {c |}{col 20}{res}{space 2} -269.374{col 32}{space 2} 78.15453{col 43}{space 1}   -3.45{col 52}{space 3}0.001{col 60}{space 4}-422.5832{col 73}{space 3}-116.1648
+{txt}{space 13}2021  {c |}{col 20}{res}{space 2} -260.468{col 32}{space 2} 69.10146{col 43}{space 1}   -3.77{col 52}{space 3}0.000{col 60}{space 4}-395.9301{col 73}{space 3}-125.0058
+{txt}{space 18} {c |}
+{space 13}_cons {c |}{col 20}{res}{space 2} 658.9812{col 32}{space 2} 384.6131{col 43}{space 1}    1.71{col 52}{space 3}0.087{col 60}{space 4}-94.99008{col 73}{space 3} 1412.952
+{txt}{hline 19}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+           sigma_u {c |} {res} 3202.8562
+           {txt}sigma_e {c |} {res} 2818.7409
+               {txt}rho {c |} {res} .56353109{txt}   (fraction of variance due to u_i)
+{hline 19}{c BT}{hline 64}
+
+{com}. 
+. *******************************************************************************
+. ** regression with education controls - crime_rate
+. *******************************************************************************
+. 
+. xtreg crime_rate dycd_site ///
+> /*prcnt_hs_no_ba_deg */ prcnt_hs_no_ba_deg prcnt_ba_or_hghr_deg ///
+> i.year, i(geoid) fe vce(robust)
+{res}
+{txt}Fixed-effects (within) regression{col 49}Number of obs{col 67}={col 69}{res}    19,098
+{txt}Group variable: {res}geoid{txt}{col 49}Number of groups{col 67}={col 69}{res}     6,366
+
+{txt}R-squared:{col 49}Obs per group:
+     Within  = {res}0.0041{col 63}{txt}min{col 67}={col 69}{res}         3
+{txt}     Between = {res}0.0008{col 63}{txt}avg{col 67}={col 69}{res}       3.0
+{txt}     Overall = {res}0.0014{col 63}{txt}max{col 67}={col 69}{res}         3
+
+{txt}{col 49}F({res}5{txt},{res}6365{txt}){col 67}={col 70}{res}    10.57
+{txt}corr(u_i, Xb) = {res}-0.0635{txt}{col 49}Prob > F{col 67}={col 73}{res}0.0000
+
+{txt}{ralign 86:(Std. err. adjusted for {res:6,366} clusters in geoid)}
+{hline 21}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 22}{c |}{col 34}    Robust
+{col 1}          crime_rate{col 22}{c |} Coefficient{col 34}  std. err.{col 46}      t{col 54}   P>|t|{col 62}     [95% con{col 75}f. interval]
+{hline 21}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 11}dycd_site {c |}{col 22}{res}{space 2}-91.62015{col 34}{space 2} 94.12025{col 45}{space 1}   -0.97{col 54}{space 3}0.330{col 62}{space 4}-276.1275{col 75}{space 3} 92.88723
+{txt}{space 2}prcnt_hs_no_ba_deg {c |}{col 22}{res}{space 2}-12.84809{col 34}{space 2} 10.25516{col 45}{space 1}   -1.25{col 54}{space 3}0.210{col 62}{space 4}-32.95166{col 75}{space 3} 7.255473
+{txt}prcnt_ba_or_hghr_deg {c |}{col 22}{res}{space 2}-20.03007{col 34}{space 2} 12.95471{col 45}{space 1}   -1.55{col 54}{space 3}0.122{col 62}{space 4}-45.42567{col 75}{space 3} 5.365533
+{txt}{space 20} {c |}
+{space 16}year {c |}
+{space 15}2020  {c |}{col 22}{res}{space 2}-247.3822{col 34}{space 2} 61.77149{col 45}{space 1}   -4.00{col 54}{space 3}0.000{col 62}{space 4}-368.4751{col 75}{space 3}-126.2892
+{txt}{space 15}2021  {c |}{col 22}{res}{space 2}-253.6596{col 34}{space 2} 46.15571{col 45}{space 1}   -5.50{col 54}{space 3}0.000{col 62}{space 4}-344.1404{col 75}{space 3}-163.1789
+{txt}{space 20} {c |}
+{space 15}_cons {c |}{col 22}{res}{space 2} 2159.925{col 34}{space 2} 930.6398{col 45}{space 1}    2.32{col 54}{space 3}0.020{col 62}{space 4} 335.5574{col 75}{space 3} 3984.292
+{txt}{hline 21}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+             sigma_u {c |} {res} 3169.5606
+             {txt}sigma_e {c |} {res} 2821.6929
+                 {txt}rho {c |} {res}  .5578675{txt}   (fraction of variance due to u_i)
+{hline 21}{c BT}{hline 64}
+
+{com}. 
+. *******************************************************************************
+. ** regression with all controls (full force) - crime_rate
+. *******************************************************************************
+. 
+. xtreg crime_rate dycd_site ///
+> imputed_mhhi imputed_prcnt_unemp ///
+> total_pop /* prcnt_white */ prcnt_black prcnt_hisp prcnt_asian prcnt_all_other prcnt_yth_yng_adlt ///
+> /*prcnt_hs_no_ba_deg */ prcnt_hs_no_ba_deg prcnt_ba_or_hghr_deg ///
+> i.year, i(geoid) fe vce(robust)
+{res}
+{txt}Fixed-effects (within) regression{col 49}Number of obs{col 67}={col 69}{res}    19,098
+{txt}Group variable: {res}geoid{txt}{col 49}Number of groups{col 67}={col 69}{res}     6,366
+
+{txt}R-squared:{col 49}Obs per group:
+     Within  = {res}0.0073{col 63}{txt}min{col 67}={col 69}{res}         3
+{txt}     Between = {res}0.0010{col 63}{txt}avg{col 67}={col 69}{res}       3.0
+{txt}     Overall = {res}0.0015{col 63}{txt}max{col 67}={col 69}{res}         3
+
+{txt}{col 49}F({res}13{txt},{res}6365{txt}){col 67}={col 70}{res}    21.15
+{txt}corr(u_i, Xb) = {res}-0.1783{txt}{col 49}Prob > F{col 67}={col 73}{res}0.0000
+
+{txt}{ralign 86:(Std. err. adjusted for {res:6,366} clusters in geoid)}
+{hline 21}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 22}{c |}{col 34}    Robust
+{col 1}          crime_rate{col 22}{c |} Coefficient{col 34}  std. err.{col 46}      t{col 54}   P>|t|{col 62}     [95% con{col 75}f. interval]
+{hline 21}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 11}dycd_site {c |}{col 22}{res}{space 2}-84.57082{col 34}{space 2} 99.18297{col 45}{space 1}   -0.85{col 54}{space 3}0.394{col 62}{space 4}-279.0028{col 75}{space 3} 109.8612
+{txt}{space 8}imputed_mhhi {c |}{col 22}{res}{space 2} .0008896{col 34}{space 2} .0014986{col 45}{space 1}    0.59{col 54}{space 3}0.553{col 62}{space 4}-.0020481{col 75}{space 3} .0038273
+{txt}{space 1}imputed_prcnt_unemp {c |}{col 22}{res}{space 2} 7.536849{col 34}{space 2} 8.990344{col 45}{space 1}    0.84{col 54}{space 3}0.402{col 62}{space 4}-10.08725{col 75}{space 3} 25.16095
+{txt}{space 11}total_pop {c |}{col 22}{res}{space 2}-.5118684{col 34}{space 2} .0942495{col 45}{space 1}   -5.43{col 54}{space 3}0.000{col 62}{space 4}-.6966292{col 75}{space 3}-.3271077
+{txt}{space 9}prcnt_black {c |}{col 22}{res}{space 2}-6.285151{col 34}{space 2} 22.16639{col 45}{space 1}   -0.28{col 54}{space 3}0.777{col 62}{space 4}-49.73874{col 75}{space 3} 37.16844
+{txt}{space 10}prcnt_hisp {c |}{col 22}{res}{space 2} 9.879814{col 34}{space 2} 9.050785{col 45}{space 1}    1.09{col 54}{space 3}0.275{col 62}{space 4}-7.862772{col 75}{space 3}  27.6224
+{txt}{space 9}prcnt_asian {c |}{col 22}{res}{space 2} 22.41695{col 34}{space 2}  19.8569{col 45}{space 1}    1.13{col 54}{space 3}0.259{col 62}{space 4}-16.50926{col 75}{space 3} 61.34317
+{txt}{space 5}prcnt_all_other {c |}{col 22}{res}{space 2} 25.55013{col 34}{space 2} 27.36871{col 45}{space 1}    0.93{col 54}{space 3}0.351{col 62}{space 4}-28.10176{col 75}{space 3} 79.20202
+{txt}{space 2}prcnt_yth_yng_adlt {c |}{col 22}{res}{space 2} 7.722107{col 34}{space 2} 10.28268{col 45}{space 1}    0.75{col 54}{space 3}0.453{col 62}{space 4} -12.4354{col 75}{space 3} 27.87962
+{txt}{space 2}prcnt_hs_no_ba_deg {c |}{col 22}{res}{space 2}-9.023642{col 34}{space 2} 7.447545{col 45}{space 1}   -1.21{col 54}{space 3}0.226{col 62}{space 4}-23.62334{col 75}{space 3} 5.576054
+{txt}prcnt_ba_or_hghr_deg {c |}{col 22}{res}{space 2}-17.21293{col 34}{space 2}  11.2027{col 45}{space 1}   -1.54{col 54}{space 3}0.124{col 62}{space 4}-39.17399{col 75}{space 3} 4.748139
+{txt}{space 20} {c |}
+{space 16}year {c |}
+{space 15}2020  {c |}{col 22}{res}{space 2}-262.4735{col 34}{space 2} 79.05234{col 45}{space 1}   -3.32{col 54}{space 3}0.001{col 62}{space 4}-417.4427{col 75}{space 3}-107.5043
+{txt}{space 15}2021  {c |}{col 22}{res}{space 2}-253.3649{col 34}{space 2} 76.45736{col 45}{space 1}   -3.31{col 54}{space 3}0.001{col 62}{space 4}-403.2471{col 75}{space 3}-103.4828
+{txt}{space 20} {c |}
+{space 15}_cons {c |}{col 22}{res}{space 2} 1835.699{col 34}{space 2} 752.9258{col 45}{space 1}    2.44{col 54}{space 3}0.015{col 62}{space 4} 359.7112{col 75}{space 3} 3311.687
+{txt}{hline 21}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+             sigma_u {c |} {res} 3217.1745
+             {txt}sigma_e {c |} {res} 2818.1296
+                 {txt}rho {c |} {res} .56583065{txt}   (fraction of variance due to u_i)
+{hline 21}{c BT}{hline 64}
+
+{com}. 
+. *******************************************************************************
+. ** simple regressions - violent_crime_rate
+. *******************************************************************************
+. 
+. regress violent_crime_rate dycd_site, robust
+
+{txt}Linear regression                               Number of obs     = {res}    19,098
+                                                {txt}F(1, 19096)       =  {res}    16.09
+                                                {txt}Prob > F          = {res}    0.0001
+                                                {txt}R-squared         = {res}    0.0026
+                                                {txt}Root MSE          =    {res}   1111
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26}    Robust
+{col 1}violent_cr~e{col 14}{c |} Coefficient{col 26}  std. err.{col 38}      t{col 46}   P>|t|{col 54}     [95% con{col 67}f. interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 3}dycd_site {c |}{col 14}{res}{space 2} 143.1822{col 26}{space 2} 35.69986{col 37}{space 1}    4.01{col 46}{space 3}0.000{col 54}{space 4} 73.20729{col 67}{space 3}  213.157
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2} 158.0083{col 26}{space 2} 4.856889{col 37}{space 1}   32.53{col 46}{space 3}0.000{col 54}{space 4} 148.4884{col 67}{space 3} 167.5283
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. 
+. xtreg violent_crime_rate dycd_site, i(geoid) fe vce(robust)
+{res}
+{txt}Fixed-effects (within) regression{col 49}Number of obs{col 67}={col 69}{res}    19,098
+{txt}Group variable: {res}geoid{txt}{col 49}Number of groups{col 67}={col 69}{res}     6,366
+
+{txt}R-squared:{col 49}Obs per group:
+     Within  = {res}0.0001{col 63}{txt}min{col 67}={col 69}{res}         3
+{txt}     Between = {res}0.0053{col 63}{txt}avg{col 67}={col 69}{res}       3.0
+{txt}     Overall = {res}0.0026{col 63}{txt}max{col 67}={col 69}{res}         3
+
+{txt}{col 49}F({res}1{txt},{res}6365{txt}){col 67}={col 70}{res}    11.65
+{txt}corr(u_i, Xb) = {res}-0.0776{txt}{col 49}Prob > F{col 67}={col 73}{res}0.0006
+
+{txt}{ralign 78:(Std. err. adjusted for {res:6,366} clusters in geoid)}
+{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26}    Robust
+{col 1}violent_cr~e{col 14}{c |} Coefficient{col 26}  std. err.{col 38}      t{col 46}   P>|t|{col 54}     [95% con{col 67}f. interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 3}dycd_site {c |}{col 14}{res}{space 2}-37.17577{col 26}{space 2} 10.88955{col 37}{space 1}   -3.41{col 46}{space 3}0.001{col 54}{space 4}-58.52295{col 67}{space 3}-15.82859
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2} 193.8854{col 26}{space 2} 2.166164{col 37}{space 1}   89.51{col 46}{space 3}0.000{col 54}{space 4}  189.639{col 67}{space 3} 198.1318
+{txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+     sigma_u {c |} {res} 928.25509
+     {txt}sigma_e {c |} {res} 752.96093
+         {txt}rho {c |} {res} .60314496{txt}   (fraction of variance due to u_i)
+{hline 13}{c BT}{hline 64}
+
+{com}. 
+. xtreg violent_crime_rate dycd_site i.year, i(geoid) fe vce(robust)
+{res}
+{txt}Fixed-effects (within) regression{col 49}Number of obs{col 67}={col 69}{res}    19,098
+{txt}Group variable: {res}geoid{txt}{col 49}Number of groups{col 67}={col 69}{res}     6,366
+
+{txt}R-squared:{col 49}Obs per group:
+     Within  = {res}0.0027{col 63}{txt}min{col 67}={col 69}{res}         3
+{txt}     Between = {res}0.0053{col 63}{txt}avg{col 67}={col 69}{res}       3.0
+{txt}     Overall = {res}0.0008{col 63}{txt}max{col 67}={col 69}{res}         3
+
+{txt}{col 49}F({res}3{txt},{res}6365{txt}){col 67}={col 70}{res}    12.34
+{txt}corr(u_i, Xb) = {res}0.0001{txt}{col 49}Prob > F{col 67}={col 73}{res}0.0000
+
+{txt}{ralign 78:(Std. err. adjusted for {res:6,366} clusters in geoid)}
+{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26}    Robust
+{col 1}violent_cr~e{col 14}{c |} Coefficient{col 26}  std. err.{col 38}      t{col 46}   P>|t|{col 54}     [95% con{col 67}f. interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 3}dycd_site {c |}{col 14}{res}{space 2} .1638539{col 26}{space 2} 14.92876{col 37}{space 1}    0.01{col 46}{space 3}0.991{col 54}{space 4}-29.10154{col 67}{space 3} 29.42925
+{txt}{space 12} {c |}
+{space 8}year {c |}
+{space 7}2020  {c |}{col 14}{res}{space 2}-64.19352{col 26}{space 2} 17.62764{col 37}{space 1}   -3.64{col 46}{space 3}0.000{col 54}{space 4}-98.74964{col 67}{space 3} -29.6374
+{txt}{space 7}2021  {c |}{col 14}{res}{space 2}-71.58254{col 26}{space 2} 15.26948{col 37}{space 1}   -4.69{col 46}{space 3}0.000{col 54}{space 4}-101.5159{col 67}{space 3}-41.64922
+{txt}{space 12} {c |}
+{space 7}_cons {c |}{col 14}{res}{space 2} 231.7164{col 26}{space 2} 9.018199{col 37}{space 1}   25.69{col 46}{space 3}0.000{col 54}{space 4} 214.0377{col 67}{space 3} 249.3951
+{txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+     sigma_u {c |} {res} 927.19336
+     {txt}sigma_e {c |} {res} 752.03545
+         {txt}rho {c |} {res} .60318585{txt}   (fraction of variance due to u_i)
+{hline 13}{c BT}{hline 64}
+
+{com}. 
+. *******************************************************************************
+. ** regression with economic controls - violent_crime_rate
+. *******************************************************************************
+. 
+. xtreg violent_crime_rate dycd_site ///
+> imputed_mhhi imputed_prcnt_unemp ///
+> i.year, i(geoid) fe vce(robust)
+{res}
+{txt}Fixed-effects (within) regression{col 49}Number of obs{col 67}={col 69}{res}    19,098
+{txt}Group variable: {res}geoid{txt}{col 49}Number of groups{col 67}={col 69}{res}     6,366
+
+{txt}R-squared:{col 49}Obs per group:
+     Within  = {res}0.0029{col 63}{txt}min{col 67}={col 69}{res}         3
+{txt}     Between = {res}0.0043{col 63}{txt}avg{col 67}={col 69}{res}       3.0
+{txt}     Overall = {res}0.0033{col 63}{txt}max{col 67}={col 69}{res}         3
+
+{txt}{col 49}F({res}5{txt},{res}6365{txt}){col 67}={col 70}{res}    18.36
+{txt}corr(u_i, Xb) = {res}0.0233{txt}{col 49}Prob > F{col 67}={col 73}{res}0.0000
+
+{txt}{ralign 85:(Std. err. adjusted for {res:6,366} clusters in geoid)}
+{hline 20}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 21}{c |}{col 33}    Robust
+{col 1} violent_crime_rate{col 21}{c |} Coefficient{col 33}  std. err.{col 45}      t{col 53}   P>|t|{col 61}     [95% con{col 74}f. interval]
+{hline 20}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 10}dycd_site {c |}{col 21}{res}{space 2} .0075829{col 33}{space 2} 14.87343{col 44}{space 1}    0.00{col 53}{space 3}1.000{col 61}{space 4}-29.14934{col 74}{space 3} 29.16451
+{txt}{space 7}imputed_mhhi {c |}{col 21}{res}{space 2}-.0005982{col 33}{space 2}  .000308{col 44}{space 1}   -1.94{col 53}{space 3}0.052{col 61}{space 4} -.001202{col 74}{space 3} 5.58e-06
+{txt}imputed_prcnt_unemp {c |}{col 21}{res}{space 2}  .492011{col 33}{space 2} 2.452394{col 44}{space 1}    0.20{col 53}{space 3}0.841{col 61}{space 4}-4.315507{col 74}{space 3} 5.299529
+{txt}{space 19} {c |}
+{space 15}year {c |}
+{space 14}2020  {c |}{col 21}{res}{space 2}-63.09782{col 33}{space 2} 18.72515{col 44}{space 1}   -3.37{col 53}{space 3}0.001{col 61}{space 4}-99.80543{col 74}{space 3}-26.39021
+{txt}{space 14}2021  {c |}{col 21}{res}{space 2}-69.39327{col 33}{space 2} 18.59597{col 44}{space 1}   -3.73{col 53}{space 3}0.000{col 61}{space 4}-105.8476{col 74}{space 3}-32.93891
+{txt}{space 19} {c |}
+{space 14}_cons {c |}{col 21}{res}{space 2} 273.6073{col 33}{space 2} 29.38394{col 44}{space 1}    9.31{col 53}{space 3}0.000{col 61}{space 4} 216.0049{col 74}{space 3} 331.2097
+{txt}{hline 20}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+            sigma_u {c |} {res}  925.8145
+            {txt}sigma_e {c |} {res} 752.04558
+                {txt}rho {c |} {res} .60246676{txt}   (fraction of variance due to u_i)
+{hline 20}{c BT}{hline 64}
+
+{com}. 
+. *******************************************************************************
+. ** regression with demographic controls - violent_crime_rate
+. *******************************************************************************
+. 
+. xtreg violent_crime_rate dycd_site ///
+> total_pop /* prcnt_white */ prcnt_black prcnt_hisp prcnt_asian prcnt_all_other prcnt_yth_yng_adlt ///
+> i.year, i(geoid) fe vce(robust)
+{res}
+{txt}Fixed-effects (within) regression{col 49}Number of obs{col 67}={col 69}{res}    19,098
+{txt}Group variable: {res}geoid{txt}{col 49}Number of groups{col 67}={col 69}{res}     6,366
+
+{txt}R-squared:{col 49}Obs per group:
+     Within  = {res}0.0066{col 63}{txt}min{col 67}={col 69}{res}         3
+{txt}     Between = {res}0.0001{col 63}{txt}avg{col 67}={col 69}{res}       3.0
+{txt}     Overall = {res}0.0003{col 63}{txt}max{col 67}={col 69}{res}         3
+
+{txt}{col 49}F({res}9{txt},{res}6365{txt}){col 67}={col 70}{res}    24.55
+{txt}corr(u_i, Xb) = {res}-0.1730{txt}{col 49}Prob > F{col 67}={col 73}{res}0.0000
+
+{txt}{ralign 84:(Std. err. adjusted for {res:6,366} clusters in geoid)}
+{hline 19}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 20}{c |}{col 32}    Robust
+{col 1}violent_crime_rate{col 20}{c |} Coefficient{col 32}  std. err.{col 44}      t{col 52}   P>|t|{col 60}     [95% con{col 73}f. interval]
+{hline 19}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 9}dycd_site {c |}{col 20}{res}{space 2} 1.760276{col 32}{space 2} 17.14057{col 43}{space 1}    0.10{col 52}{space 3}0.918{col 60}{space 4}-31.84101{col 73}{space 3} 35.36156
+{txt}{space 9}total_pop {c |}{col 20}{res}{space 2}-.1293049{col 32}{space 2}   .02132{col 43}{space 1}   -6.06{col 52}{space 3}0.000{col 60}{space 4}-.1710993{col 73}{space 3}-.0875104
+{txt}{space 7}prcnt_black {c |}{col 20}{res}{space 2}-1.712161{col 32}{space 2} 6.188955{col 43}{space 1}   -0.28{col 52}{space 3}0.782{col 60}{space 4} -13.8446{col 73}{space 3} 10.42027
+{txt}{space 8}prcnt_hisp {c |}{col 20}{res}{space 2}  2.57207{col 32}{space 2} 3.334875{col 43}{space 1}    0.77{col 52}{space 3}0.441{col 60}{space 4}-3.965408{col 73}{space 3} 9.109547
+{txt}{space 7}prcnt_asian {c |}{col 20}{res}{space 2} 7.550867{col 32}{space 2} 5.317082{col 43}{space 1}    1.42{col 52}{space 3}0.156{col 60}{space 4}-2.872405{col 73}{space 3} 17.97414
+{txt}{space 3}prcnt_all_other {c |}{col 20}{res}{space 2} 7.213218{col 32}{space 2} 6.958943{col 43}{space 1}    1.04{col 52}{space 3}0.300{col 60}{space 4}-6.428653{col 73}{space 3} 20.85509
+{txt}prcnt_yth_yng_adlt {c |}{col 20}{res}{space 2} 3.183465{col 32}{space 2} 2.956601{col 43}{space 1}    1.08{col 52}{space 3}0.282{col 60}{space 4}-2.612469{col 73}{space 3}   8.9794
+{txt}{space 18} {c |}
+{space 14}year {c |}
+{space 13}2020  {c |}{col 20}{res}{space 2}-66.60355{col 32}{space 2} 20.24719{col 43}{space 1}   -3.29{col 52}{space 3}0.001{col 60}{space 4}-106.2949{col 73}{space 3}-26.91223
+{txt}{space 13}2021  {c |}{col 20}{res}{space 2}-67.91921{col 32}{space 2} 19.05689{col 43}{space 1}   -3.56{col 52}{space 3}0.000{col 60}{space 4}-105.2771{col 73}{space 3}-30.56128
+{txt}{space 18} {c |}
+{space 13}_cons {c |}{col 20}{res}{space 2} 201.5284{col 32}{space 2} 163.2221{col 43}{space 1}    1.23{col 52}{space 3}0.217{col 60}{space 4}-118.4419{col 73}{space 3} 521.4987
+{txt}{hline 19}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+           sigma_u {c |} {res} 942.50878
+           {txt}sigma_e {c |} {res} 750.77038
+               {txt}rho {c |} {res} .61180143{txt}   (fraction of variance due to u_i)
+{hline 19}{c BT}{hline 64}
+
+{com}. 
+. *******************************************************************************
+. ** regression with education controls - violent_crime_rate
+. *******************************************************************************
+. 
+. xtreg violent_crime_rate dycd_site ///
+> /*prcnt_hs_no_ba_deg */ prcnt_hs_no_ba_deg prcnt_ba_or_hghr_deg ///
+> i.year, i(geoid) fe vce(robust)
+{res}
+{txt}Fixed-effects (within) regression{col 49}Number of obs{col 67}={col 69}{res}    19,098
+{txt}Group variable: {res}geoid{txt}{col 49}Number of groups{col 67}={col 69}{res}     6,366
+
+{txt}R-squared:{col 49}Obs per group:
+     Within  = {res}0.0047{col 63}{txt}min{col 67}={col 69}{res}         3
+{txt}     Between = {res}0.0033{col 63}{txt}avg{col 67}={col 69}{res}       3.0
+{txt}     Overall = {res}0.0034{col 63}{txt}max{col 67}={col 69}{res}         3
+
+{txt}{col 49}F({res}5{txt},{res}6365{txt}){col 67}={col 70}{res}     8.86
+{txt}corr(u_i, Xb) = {res}-0.0644{txt}{col 49}Prob > F{col 67}={col 73}{res}0.0000
+
+{txt}{ralign 86:(Std. err. adjusted for {res:6,366} clusters in geoid)}
+{hline 21}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 22}{c |}{col 34}    Robust
+{col 1}  violent_crime_rate{col 22}{c |} Coefficient{col 34}  std. err.{col 46}      t{col 54}   P>|t|{col 62}     [95% con{col 75}f. interval]
+{hline 21}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 11}dycd_site {c |}{col 22}{res}{space 2}-.1527096{col 34}{space 2} 14.85267{col 45}{space 1}   -0.01{col 54}{space 3}0.992{col 62}{space 4}-29.26895{col 75}{space 3} 28.96353
+{txt}{space 2}prcnt_hs_no_ba_deg {c |}{col 22}{res}{space 2}-5.764452{col 34}{space 2} 3.568633{col 45}{space 1}   -1.62{col 54}{space 3}0.106{col 62}{space 4}-12.76017{col 75}{space 3}  1.23127
+{txt}prcnt_ba_or_hghr_deg {c |}{col 22}{res}{space 2}-7.870273{col 34}{space 2} 3.846928{col 45}{space 1}   -2.05{col 54}{space 3}0.041{col 62}{space 4}-15.41155{col 75}{space 3}-.3289988
+{txt}{space 20} {c |}
+{space 16}year {c |}
+{space 15}2020  {c |}{col 22}{res}{space 2}-59.15134{col 34}{space 2} 16.52093{col 45}{space 1}   -3.58{col 54}{space 3}0.000{col 62}{space 4}-91.53793{col 75}{space 3}-26.76475
+{txt}{space 15}2021  {c |}{col 22}{res}{space 2}-63.05484{col 34}{space 2} 12.95673{col 45}{space 1}   -4.87{col 54}{space 3}0.000{col 62}{space 4} -88.4544{col 75}{space 3}-37.65528
+{txt}{space 20} {c |}
+{space 15}_cons {c |}{col 22}{res}{space 2} 784.6961{col 34}{space 2}  303.107{col 45}{space 1}    2.59{col 54}{space 3}0.010{col 62}{space 4} 190.5043{col 75}{space 3} 1378.888
+{txt}{hline 21}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+             sigma_u {c |} {res} 927.84138
+             {txt}sigma_e {c |} {res} 751.34785
+                 {txt}rho {c |} {res} .60395794{txt}   (fraction of variance due to u_i)
+{hline 21}{c BT}{hline 64}
+
+{com}. 
+. *******************************************************************************
+. ** regression with all controls (full force) - violent_crime_rate
+. *******************************************************************************
+. 
+. xtreg violent_crime_rate dycd_site ///
+> imputed_mhhi imputed_prcnt_unemp ///
+> total_pop /* prcnt_white */ prcnt_black prcnt_hisp prcnt_asian prcnt_all_other prcnt_yth_yng_adlt ///
+> /*prcnt_hs_no_ba_deg */ prcnt_hs_no_ba_deg prcnt_ba_or_hghr_deg ///
+> i.year, i(geoid) fe vce(robust)
+{res}
+{txt}Fixed-effects (within) regression{col 49}Number of obs{col 67}={col 69}{res}    19,098
+{txt}Group variable: {res}geoid{txt}{col 49}Number of groups{col 67}={col 69}{res}     6,366
+
+{txt}R-squared:{col 49}Obs per group:
+     Within  = {res}0.0082{col 63}{txt}min{col 67}={col 69}{res}         3
+{txt}     Between = {res}0.0006{col 63}{txt}avg{col 67}={col 69}{res}       3.0
+{txt}     Overall = {res}0.0010{col 63}{txt}max{col 67}={col 69}{res}         3
+
+{txt}{col 49}F({res}13{txt},{res}6365{txt}){col 67}={col 70}{res}    20.09
+{txt}corr(u_i, Xb) = {res}-0.1981{txt}{col 49}Prob > F{col 67}={col 73}{res}0.0000
+
+{txt}{ralign 86:(Std. err. adjusted for {res:6,366} clusters in geoid)}
+{hline 21}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 22}{c |}{col 34}    Robust
+{col 1}  violent_crime_rate{col 22}{c |} Coefficient{col 34}  std. err.{col 46}      t{col 54}   P>|t|{col 62}     [95% con{col 75}f. interval]
+{hline 21}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 11}dycd_site {c |}{col 22}{res}{space 2} 1.826255{col 34}{space 2}  17.1761{col 45}{space 1}    0.11{col 54}{space 3}0.915{col 62}{space 4}-31.84468{col 75}{space 3} 35.49719
+{txt}{space 8}imputed_mhhi {c |}{col 22}{res}{space 2} 6.67e-06{col 34}{space 2} .0004201{col 45}{space 1}    0.02{col 54}{space 3}0.987{col 62}{space 4}-.0008168{col 75}{space 3} .0008301
+{txt}{space 1}imputed_prcnt_unemp {c |}{col 22}{res}{space 2} .4502998{col 34}{space 2} 2.400392{col 45}{space 1}    0.19{col 54}{space 3}0.851{col 62}{space 4}-4.255278{col 75}{space 3} 5.155877
+{txt}{space 11}total_pop {c |}{col 22}{res}{space 2}-.1307441{col 34}{space 2} .0245375{col 45}{space 1}   -5.33{col 54}{space 3}0.000{col 62}{space 4}-.1788458{col 75}{space 3}-.0826423
+{txt}{space 9}prcnt_black {c |}{col 22}{res}{space 2}-2.829032{col 34}{space 2} 6.400755{col 45}{space 1}   -0.44{col 54}{space 3}0.659{col 62}{space 4}-15.37667{col 75}{space 3} 9.718603
+{txt}{space 10}prcnt_hisp {c |}{col 22}{res}{space 2} .9959316{col 34}{space 2} 3.226531{col 45}{space 1}    0.31{col 54}{space 3}0.758{col 62}{space 4}-5.329156{col 75}{space 3} 7.321019
+{txt}{space 9}prcnt_asian {c |}{col 22}{res}{space 2} 6.622595{col 34}{space 2} 5.243024{col 45}{space 1}    1.26{col 54}{space 3}0.207{col 62}{space 4}-3.655498{col 75}{space 3} 16.90069
+{txt}{space 5}prcnt_all_other {c |}{col 22}{res}{space 2} 5.935568{col 34}{space 2} 6.675331{col 45}{space 1}    0.89{col 54}{space 3}0.374{col 62}{space 4}-7.150329{col 75}{space 3} 19.02146
+{txt}{space 2}prcnt_yth_yng_adlt {c |}{col 22}{res}{space 2} 2.605519{col 34}{space 2} 2.720556{col 45}{space 1}    0.96{col 54}{space 3}0.338{col 62}{space 4}-2.727688{col 75}{space 3} 7.938725
+{txt}{space 2}prcnt_hs_no_ba_deg {c |}{col 22}{res}{space 2}-4.765652{col 34}{space 2} 3.136993{col 45}{space 1}   -1.52{col 54}{space 3}0.129{col 62}{space 4}-10.91521{col 75}{space 3} 1.383912
+{txt}prcnt_ba_or_hghr_deg {c |}{col 22}{res}{space 2}-7.461387{col 34}{space 2} 3.685149{col 45}{space 1}   -2.02{col 54}{space 3}0.043{col 62}{space 4}-14.68552{col 75}{space 3} -.237254
+{txt}{space 20} {c |}
+{space 16}year {c |}
+{space 15}2020  {c |}{col 22}{res}{space 2}-62.00686{col 34}{space 2} 20.82746{col 45}{space 1}   -2.98{col 54}{space 3}0.003{col 62}{space 4}-102.8357{col 75}{space 3}-21.17802
+{txt}{space 15}2021  {c |}{col 22}{res}{space 2}-60.41822{col 34}{space 2} 20.99646{col 45}{space 1}   -2.88{col 54}{space 3}0.004{col 62}{space 4}-101.5783{col 75}{space 3} -19.2581
+{txt}{space 20} {c |}
+{space 15}_cons {c |}{col 22}{res}{space 2} 784.6766{col 34}{space 2} 347.2531{col 45}{space 1}    2.26{col 54}{space 3}0.024{col 62}{space 4} 103.9435{col 75}{space 3}  1465.41
+{txt}{hline 21}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+             sigma_u {c |} {res}   946.944
+             {txt}sigma_e {c |} {res} 750.26753
+                 {txt}rho {c |} {res} .61434659{txt}   (fraction of variance due to u_i)
+{hline 21}{c BT}{hline 64}
+
+{com}. 
+. 
+. log close
+      {txt}name:  {res}<unnamed>
+       {txt}log:  {res}/Users/nathanielhugospilka/Documents/Thesis/quant_work/output/analyses/reg_results_2023-02-07.smcl
+  {txt}log type:  {res}smcl
+ {txt}closed on:  {res} 7 Feb 2023, 06:10:48
+{txt}{.-}
+{smcl}
+{txt}{sf}{ul off}
