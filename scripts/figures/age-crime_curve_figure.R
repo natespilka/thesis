@@ -15,7 +15,7 @@ library(stringr)
 
 crime_data <- 
   read_csv('data/raw/crime/table-38.csv',
-           col_names = 
+           col_names = TRUE,
            skip = 4) %>% 
   clean_names() %>% 
   rename_all(
@@ -72,13 +72,16 @@ crime_data %>%
     labels = scales::percent) +
   labs(
     title = 'Age-Crime Curve (arrests by age-group in 2018)',
+    subtitle = 'Arrests are most prevalent during early adulthood',
     x = 'Age ranges',
     y = 'Percentage of arrests',
     caption =  'Source: FBI, Crime in the United States 2018, Table 38') +
   theme(
-    axis.title = element_text(size = 20),
-    plot.title = element_text(size  = 24),
-    axis.text = element_text(size = 12),
+    axis.title = element_text(size = 20, family = 'Times'),
+    plot.title = element_text(size  = 24, family = 'Times'),
+    plot.subtitle = element_text(size = 15, family = 'Times'),
+    plot.caption = element_text(size = 10, family = 'Times'),
+    axis.text = element_text(size = 12, family = 'Times'),
     panel.background = element_rect(fill = 'white'),
     panel.grid = element_line(color = '#e9e9e9'),
     panel.grid.minor = element_blank(),

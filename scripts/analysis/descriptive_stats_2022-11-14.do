@@ -6,26 +6,367 @@
 cls
 clear all
 
+cd "/Users/nathanielhugospilka/Documents/Thesis/quant_work/"
+
 *******************************************************************************
 ** load data
 *******************************************************************************
 
-global data_location = "/Users/nathanielhugospilka/Documents/Thesis/quant_work/data/processed/"
+* FOR SPATIAL DATA CHECK THE END OF THIS DOC FOR NOW
+// global data_location = "/Users/nathanielhugospilka/Documents/Thesis/quant_work/data/processed/shapefiles/shape1/"
+// use ${data_location}thesis_dataset_2023-03-04.shp, clear
 
-use ${data_location}thesis_dataset_2023-02-07.dta, clear
+global data_location = "/Users/nathanielhugospilka/Documents/Thesis/quant_work/data/processed/"
+use ${data_location}thesis_dataset_2023-03-06.dta, clear
+
 browse
 describe
 summarize
+
+* we need to turn geoid into a numeric for the regression?
+// destring geoid, replace
+xtset geoid year
+
+*******************************************************************************
+*******************************************************************************
+** regressions
+*******************************************************************************
+*******************************************************************************
+
+// log using "/Users/nathanielhugospilka/Documents/Thesis/quant_work/output/analyses/reg_results_2023-02-14.log"
+
+*******************************************************************************
+** main regressions - logged crime_rate
+*******************************************************************************
+
+* bivariate
+regress logd_crime_rate all_site_type, robust
+
+* multivariate 
+regress logd_crime_rate all_site_type ///
+median_hh_inc prcnt_unemp ///
+total_pop /* prcnt_white */ prcnt_black prcnt_hisp prcnt_asian prcnt_all_other prcnt_yth_yng_adlt ///
+/*prcnt_hs_no_ba_deg */ prcnt_hs_no_ba_deg prcnt_ba_or_hghr_deg 
+
+* multivariate + entity FE
+xtreg logd_crime_rate all_site_type ///
+median_hh_inc prcnt_unemp ///
+total_pop /* prcnt_white */ prcnt_black prcnt_hisp prcnt_asian prcnt_all_other prcnt_yth_yng_adlt ///
+/*prcnt_hs_no_ba_deg */ prcnt_hs_no_ba_deg prcnt_ba_or_hghr_deg, ///
+i(geoid) fe vce(robust)
+
+* multivariate + year/entity FE
+xtreg logd_crime_rate all_site_type ///
+median_hh_inc prcnt_unemp ///
+total_pop /* prcnt_white */ prcnt_black prcnt_hisp prcnt_asian prcnt_all_other prcnt_yth_yng_adlt ///
+/*prcnt_hs_no_ba_deg */ prcnt_hs_no_ba_deg prcnt_ba_or_hghr_deg ///
+i.year, i(geoid) fe vce(robust)
+
+
+******************************* TESTING DIST VARIABLE
+
+* multivariate + year/entity FE
+xtreg logd_crime_rate mean_dist_all ///
+median_hh_inc prcnt_unemp ///
+total_pop /* prcnt_white */ prcnt_black prcnt_hisp prcnt_asian prcnt_all_other prcnt_yth_yng_adlt ///
+/*prcnt_hs_no_ba_deg */ prcnt_hs_no_ba_deg prcnt_ba_or_hghr_deg ///
+i.year, i(geoid) fe vce(robust)
+
+xtreg lead_logd_crime_rate indx_dist_all ///
+median_hh_inc prcnt_unemp ///
+total_pop /* prcnt_white */ prcnt_black prcnt_hisp prcnt_asian prcnt_all_other prcnt_yth_yng_adlt ///
+/*prcnt_hs_no_ba_deg */ prcnt_hs_no_ba_deg prcnt_ba_or_hghr_deg ///
+i.year, i(geoid) fe vce(robust)
+
+
+mean_dist_all
+mean_dist_syep
+mean_dist_asp
+logd_crime_rate
+logd_property_crime_rate
+logd_violent_crime_rate
+
+lead_logd_crime_rate
+lead_logd_property_crime_rate
+lead_logd_violent_crime_rate
+
+*******************************************************************************
+** regressions - program site type
+*******************************************************************************
+
+* multivariate + year/entity FE + program site type
+xtreg logd_crime_rate syep_site_type asp_site_type ///
+imputed_mhhi imputed_prcnt_unemp ///
+total_pop /* prcnt_white */ prcnt_black prcnt_hisp prcnt_asian prcnt_all_other prcnt_yth_yng_adlt ///
+/*prcnt_hs_no_ba_deg */ prcnt_hs_no_ba_deg prcnt_ba_or_hghr_deg ///
+i.year, i(geoid) fe vce(robust)
+
+*******************************************************************************
+** regressions - Interactions
+*******************************************************************************
+
+* creating youth interaction
+generate interaction_youth = all_site_type*above_yth_prop_threshold
+* multivariate + year/entity FE + interaction (youth)
+xtreg logd_crime_rate all_site_type above_yth_prop_threshold interaction_youth ///
+imputed_mhhi imputed_prcnt_unemp ///
+total_pop /* prcnt_white */ prcnt_black prcnt_hisp prcnt_asian prcnt_all_other prcnt_yth_yng_adlt ///
+/*prcnt_hs_no_ba_deg */ prcnt_hs_no_ba_deg prcnt_ba_or_hghr_deg ///
+i.year, i(geoid) fe vce(robust)
+
+test all_site_type + interaction_youth = 0
+
+* creating income interaction
+generate interaction_inc = all_site_type*below_inc_theshold
+* multivariate + year/entity FE + interaction (income)
+xtreg logd_crime_rate all_site_type below_inc_theshold interaction_inc ///
+imputed_mhhi imputed_prcnt_unemp ///
+total_pop /* prcnt_white */ prcnt_black prcnt_hisp prcnt_asian prcnt_all_other prcnt_yth_yng_adlt ///
+/*prcnt_hs_no_ba_deg */ prcnt_hs_no_ba_deg prcnt_ba_or_hghr_deg ///
+i.year, i(geoid) fe vce(robust)
+
+test all_site_type + interaction_inc = 0
+
+
+// log close
+
+
+// translate /Users/nathanielhugospilka/Documents/Thesis/quant_work/output/analyses/reg_results_2023-02-14.smcl /Users/nathanielhugospilka/Documents/Thesis/quant_work/output/analyses/reg_results_2023-02-14.pdf, translator(smcl2pdf)
+
+*******************************************************************************
+** regressions - violent and property crime
+*******************************************************************************
+
+* violent crime
+xtreg logd_violent_crime_rate all_site_type ///
+imputed_mhhi imputed_prcnt_unemp ///
+total_pop /* prcnt_white */ prcnt_black prcnt_hisp prcnt_asian prcnt_all_other prcnt_yth_yng_adlt ///
+/*prcnt_hs_no_ba_deg */ prcnt_hs_no_ba_deg prcnt_ba_or_hghr_deg ///
+i.year, i(geoid) fe vce(robust)
+
+* property crime
+xtreg logd_property_crime_rate all_site_type ///
+imputed_mhhi imputed_prcnt_unemp ///
+total_pop /* prcnt_white */ prcnt_black prcnt_hisp prcnt_asian prcnt_all_other prcnt_yth_yng_adlt ///
+/*prcnt_hs_no_ba_deg */ prcnt_hs_no_ba_deg prcnt_ba_or_hghr_deg ///
+i.year, i(geoid) fe vce(robust)
+
+* creating youth interaction
+generate interaction_youth = all_site_type*above_yth_prop_threshold
+* violent crime + year/entity FE + interaction (youth)
+xtreg logd_violent_crime_rate all_site_type above_yth_prop_threshold interaction_youth ///
+imputed_mhhi imputed_prcnt_unemp ///
+total_pop /* prcnt_white */ prcnt_black prcnt_hisp prcnt_asian prcnt_all_other prcnt_yth_yng_adlt ///
+/*prcnt_hs_no_ba_deg */ prcnt_hs_no_ba_deg prcnt_ba_or_hghr_deg ///
+i.year, i(geoid) fe vce(robust)
+
+test all_site_type + interaction_youth = 0
+
+* violent crime + lowest income quartile
+xtreg logd_violent_crime_rate all_site_type below_inc_theshold interaction_inc ///
+imputed_mhhi imputed_prcnt_unemp ///
+total_pop /* prcnt_white */ prcnt_black prcnt_hisp prcnt_asian prcnt_all_other prcnt_yth_yng_adlt ///
+/*prcnt_hs_no_ba_deg */ prcnt_hs_no_ba_deg prcnt_ba_or_hghr_deg ///
+i.year, i(geoid) fe vce(robust)
+test all_site_type + interaction_inc = 0
+
+* property crime + year/entity FE + interaction (youth)
+xtreg logd_property_crime_rate all_site_type above_yth_prop_threshold interaction_youth ///
+imputed_mhhi imputed_prcnt_unemp ///
+total_pop /* prcnt_white */ prcnt_black prcnt_hisp prcnt_asian prcnt_all_other prcnt_yth_yng_adlt ///
+/*prcnt_hs_no_ba_deg */ prcnt_hs_no_ba_deg prcnt_ba_or_hghr_deg ///
+i.year, i(geoid) fe vce(robust)
+
+test all_site_type + interaction_youth = 0
+
+* property crime + lowest income quartile
+// generate interaction_inc = all_site_type*below_inc_theshold
+xtreg logd_property_crime_rate all_site_type below_inc_theshold interaction_inc ///
+imputed_mhhi imputed_prcnt_unemp ///
+total_pop /* prcnt_white */ prcnt_black prcnt_hisp prcnt_asian prcnt_all_other prcnt_yth_yng_adlt ///
+/*prcnt_hs_no_ba_deg */ prcnt_hs_no_ba_deg prcnt_ba_or_hghr_deg ///
+i.year, i(geoid) fe vce(robust)
+test all_site_type + interaction_inc = 0
+
+* violent crime + program type
+xtreg logd_violent_crime_rate syep_site_type asp_site_type ///
+imputed_mhhi imputed_prcnt_unemp ///
+total_pop /* prcnt_white */ prcnt_black prcnt_hisp prcnt_asian prcnt_all_other prcnt_yth_yng_adlt ///
+/*prcnt_hs_no_ba_deg */ prcnt_hs_no_ba_deg prcnt_ba_or_hghr_deg ///
+i.year, i(geoid) fe vce(robust)
+
+* property crime + program type
+xtreg logd_property_crime_rate syep_site_type asp_site_type ///
+imputed_mhhi imputed_prcnt_unemp ///
+total_pop /* prcnt_white */ prcnt_black prcnt_hisp prcnt_asian prcnt_all_other prcnt_yth_yng_adlt ///
+/*prcnt_hs_no_ba_deg */ prcnt_hs_no_ba_deg prcnt_ba_or_hghr_deg ///
+i.year, i(geoid) fe vce(robust)
+
+*******************************************************************************
+** main regressions - LAGGED/LEAD logged crime_rate
+*******************************************************************************
+
+* multivariate + year/entity FE
+xtreg lead_logd_crime_rate all_site_type ///
+imputed_mhhi imputed_prcnt_unemp ///
+total_pop /* prcnt_white */ prcnt_black prcnt_hisp prcnt_asian prcnt_all_other prcnt_yth_yng_adlt ///
+/*prcnt_hs_no_ba_deg */ prcnt_hs_no_ba_deg prcnt_ba_or_hghr_deg ///
+i.year, i(geoid) fe vce(robust)
+
+* multivariate + year/entity FE + program site type
+xtreg lead_logd_crime_rate syep_site_type asp_site_type ///
+imputed_mhhi imputed_prcnt_unemp ///
+total_pop /* prcnt_white */ prcnt_black prcnt_hisp prcnt_asian prcnt_all_other prcnt_yth_yng_adlt ///
+/*prcnt_hs_no_ba_deg */ prcnt_hs_no_ba_deg prcnt_ba_or_hghr_deg ///
+i.year, i(geoid) fe vce(robust)
+
+*******************************************************************************
+** regressions - Interactions
+*******************************************************************************
+
+* creating youth interaction
+generate interaction_youth = all_site_type*above_yth_prop_threshold
+* multivariate + year/entity FE + interaction (youth)
+xtreg lead_logd_crime_rate all_site_type above_yth_prop_threshold interaction_youth ///
+imputed_mhhi imputed_prcnt_unemp ///
+total_pop /* prcnt_white */ prcnt_black prcnt_hisp prcnt_asian prcnt_all_other prcnt_yth_yng_adlt ///
+/*prcnt_hs_no_ba_deg */ prcnt_hs_no_ba_deg prcnt_ba_or_hghr_deg ///
+i.year, i(geoid) fe vce(robust)
+
+test all_site_type + interaction_youth = 0
+
+* creating income interaction
+generate interaction_inc = all_site_type*below_inc_theshold
+* multivariate + year/entity FE + interaction (income)
+xtreg lead_logd_crime_rate all_site_type below_inc_theshold interaction_inc ///
+imputed_mhhi imputed_prcnt_unemp ///
+total_pop /* prcnt_white */ prcnt_black prcnt_hisp prcnt_asian prcnt_all_other prcnt_yth_yng_adlt ///
+/*prcnt_hs_no_ba_deg */ prcnt_hs_no_ba_deg prcnt_ba_or_hghr_deg ///
+i.year, i(geoid) fe vce(robust)
+
+test all_site_type + interaction_inc = 0
+
+*******************************************************************************
+** regressions - violent and property crime
+*******************************************************************************
+
+* violent crime
+xtreg lead_logd_violent_crime_rate all_site_type ///
+imputed_mhhi imputed_prcnt_unemp ///
+total_pop /* prcnt_white */ prcnt_black prcnt_hisp prcnt_asian prcnt_all_other prcnt_yth_yng_adlt ///
+/*prcnt_hs_no_ba_deg */ prcnt_hs_no_ba_deg prcnt_ba_or_hghr_deg ///
+i.year, i(geoid) fe vce(robust)
+
+* property crime
+xtreg lead_logd_property_crime_rate all_site_type ///
+imputed_mhhi imputed_prcnt_unemp ///
+total_pop /* prcnt_white */ prcnt_black prcnt_hisp prcnt_asian prcnt_all_other prcnt_yth_yng_adlt ///
+/*prcnt_hs_no_ba_deg */ prcnt_hs_no_ba_deg prcnt_ba_or_hghr_deg ///
+i.year, i(geoid) fe vce(robust)
+
+* lead violent crime + youth
+xtreg lead_logd_violent_crime_rate all_site_type above_yth_prop_threshold interaction_youth ///
+imputed_mhhi imputed_prcnt_unemp ///
+total_pop /* prcnt_white */ prcnt_black prcnt_hisp prcnt_asian prcnt_all_other prcnt_yth_yng_adlt ///
+/*prcnt_hs_no_ba_deg */ prcnt_hs_no_ba_deg prcnt_ba_or_hghr_deg ///
+i.year, i(geoid) fe vce(robust)
+
+test all_site_type + interaction_youth = 0
+
+* violent crime + lowest income quartile
+xtreg lead_logd_violent_crime_rate all_site_type below_inc_theshold interaction_inc ///
+imputed_mhhi imputed_prcnt_unemp ///
+total_pop /* prcnt_white */ prcnt_black prcnt_hisp prcnt_asian prcnt_all_other prcnt_yth_yng_adlt ///
+/*prcnt_hs_no_ba_deg */ prcnt_hs_no_ba_deg prcnt_ba_or_hghr_deg ///
+i.year, i(geoid) fe vce(robust)
+test all_site_type + interaction_inc = 0
+
+* lead property crime + youth
+xtreg lead_logd_property_crime_rate all_site_type above_yth_prop_threshold interaction_youth ///
+imputed_mhhi imputed_prcnt_unemp ///
+total_pop /* prcnt_white */ prcnt_black prcnt_hisp prcnt_asian prcnt_all_other prcnt_yth_yng_adlt ///
+/*prcnt_hs_no_ba_deg */ prcnt_hs_no_ba_deg prcnt_ba_or_hghr_deg ///
+i.year, i(geoid) fe vce(robust)
+
+test all_site_type + interaction_youth = 0
+
+* property crime + lowest income quartile
+// generate interaction_inc = all_site_type*below_inc_theshold
+xtreg lead_logd_property_crime_rate all_site_type below_inc_theshold interaction_inc ///
+imputed_mhhi imputed_prcnt_unemp ///
+total_pop /* prcnt_white */ prcnt_black prcnt_hisp prcnt_asian prcnt_all_other prcnt_yth_yng_adlt ///
+/*prcnt_hs_no_ba_deg */ prcnt_hs_no_ba_deg prcnt_ba_or_hghr_deg ///
+i.year, i(geoid) fe vce(robust)
+test all_site_type + interaction_inc = 0
+
+* violent crime + program type
+xtreg lead_logd_violent_crime_rate syep_site_type asp_site_type ///
+imputed_mhhi imputed_prcnt_unemp ///
+total_pop /* prcnt_white */ prcnt_black prcnt_hisp prcnt_asian prcnt_all_other prcnt_yth_yng_adlt ///
+/*prcnt_hs_no_ba_deg */ prcnt_hs_no_ba_deg prcnt_ba_or_hghr_deg ///
+i.year, i(geoid) fe vce(robust)
+
+* property crime + program type
+xtreg lead_logd_property_crime_rate syep_site_type asp_site_type ///
+imputed_mhhi imputed_prcnt_unemp ///
+total_pop /* prcnt_white */ prcnt_black prcnt_hisp prcnt_asian prcnt_all_other prcnt_yth_yng_adlt ///
+/*prcnt_hs_no_ba_deg */ prcnt_hs_no_ba_deg prcnt_ba_or_hghr_deg ///
+i.year, i(geoid) fe vce(robust)
+
+*******************************************************************************
+** spatial autocorrelation
+*******************************************************************************
+
+*******************************************************************************
+** setup and clean workspace
+*******************************************************************************
+* nate spilka
+* 2023-03-04
+
+cls
+clear all
+
+* set main dir
+cd "/Users/nathanielhugospilka/Documents/Thesis/quant_work/data/processed/"
+
+* spatial data location
+global spatial_data_location = "/Users/nathanielhugospilka/Documents/Thesis/quant_work/data/processed/"
+
+*******************************************************************************
+** working with spatial and non-spatial data
+*******************************************************************************
+
+* load/prep spatial data (NYC cut out by block groups)
+spshape2dta ${spatial_data_location}thesis_shapefile_2023-03-05, replace
+
+use thesis_shapefile_2023-03-05, clear
+spset
+
+bysort geoid: assert _N==1
+assert geoid != .
+
+spset geoid, modify replace
+
+save, replace
+
+* Step 7b
+use thesis_dataset_2023-03-05, clear
+
+* initiating panel dataset
+xtset geoid year
+spbalance
+
 
 *******************************************************************************
 ** imputaion
 *******************************************************************************
 
+* imputing data 
 impute median_hh_inc ///
 prcnt_unemp ///
  total_pop prcnt_white prcnt_black prcnt_hisp prcnt_asian prcnt_all_other prcnt_yth_yng_adlt ///
  prcnt_no_hs_deg prcnt_hs_no_ba_deg prcnt_ba_or_hghr_deg ///
- num_cmplnt_ttl num_cmplnt_vlnt crime_rate violent_crime_rate, ///
+ crime_rate violent_crime_rate property_crime_rate, ///
  generate(imputed_mhhi)
 
 * some income imputaions were negative - ADDRESS
@@ -38,181 +379,73 @@ median_hh_inc ///
  num_cmplnt_ttl num_cmplnt_vlnt crime_rate violent_crime_rate, ///
  generate(imputed_prcnt_unemp)
 
-* we need to turn geoid into a numeric for the regression?
-destring geoid, replace
-
 *******************************************************************************
-** labling variables
+** imputaion
 *******************************************************************************
 
-* dv 
-label variable crime_rate "NYPD Complaint Rate (2019-2021)"
-
-* iv
-label variable  site_for_0_1_2_3 "NYC DYCD Programs (2019)"
- 
-* economic control variables
-label variable imputed_mhhi "Median Household Income (2019)"
-label variable imputed_prcnt_unemp "Unemployment Rate" 
-
-* population
-label variable total_pop "Population"
-
-* demographic control variables
-* label variable prcnt_white "Proportion White Residents (non-Latino)" 
-label variable prcnt_black "Proportion Black Residents (non-Latino)" 
-label variable prcnt_hisp "Proportion Latino Residents"
-* label variable prcnt_asian "Proportion Asian Residents"
-label variable prcnt_other "Proportion 'Other' Residents"
-label variable prcnt_yth_yng_adlt "Proportion Residents 10-24 years-old"
-
-* education control variables
-label variable prcnt_no_hs_deg "Proportion Without a High School Degree"
-label variable prcnt_ba_deg "Proportion With a Bachelor's Degree or Higher"
-
-* prior crime control variables
-label variable cmplnt_rate_2006_2016 "Reported Crime Rate (2006-2016)"
-
-*******************************************************************************
-** output
-*******************************************************************************
-
-* ssc install estout, replace
 
 
-tabstat crime_rate ///
-total_pop prcnt_white prcnt_black prcnt_hisp prcnt_asian prcnt_all_other prcnt_yth_yng_adlt, stat(mean sd min max) col(stat) by(geoid)
+merge m:1 geoid using thesis_shapefile_2023-03-05
+
+keep if _merge == 3
+drop _merge
+
+save, replace 
+
+xtset _ID year
+spset
 
 
-tabstat cmplnt_rate_2019 ///
-num_dycd_programs ///
-imputed_mhhi imputed_prcnt_unemp ///
-total_pop /* prcnt_white */ prcnt_black prcnt_hisp /* prcnt_asian */ prcnt_other prcnt_yth_yng_adlt ///
- prcnt_no_hs_deg prcnt_ba_deg ///
- cmplnt_rate_2006_2016, ///
- c(stat) stat(sum mean sd min max n)
-
-* clear the stored estimates
-est clear
-
-estpost tabstat cmplnt_rate_2019 ///
-num_dycd_programs ///
-imputed_mhhi imputed_prcnt_unemp ///
-total_pop /* prcnt_white */ prcnt_black prcnt_hisp /* prcnt_asian */ prcnt_other prcnt_yth_yng_adlt ///
- prcnt_no_hs_deg prcnt_ba_deg ///
- cmplnt_rate_2006_2016, ///
- c(stat) stat(sum mean sd min max n) elabels
- 
-*ereturn list 
-
-* formatted output
-esttab . using results1.rtf, replace ///
-   cells("Sum(fmt(%6.0fc)) Mean(fmt(%6.2fc)) SD(fmt(%6.2fc)) Min Max count") nonumber ///
-   nomtitle nonote noobs label ///
-   collabels("Sum" "Mean" "SD" "Min" "Max" "N")
+* check data
+browse
+describe
+summarize
 
 
 *******************************************************************************
-*******************************************************************************
-** regression
-*******************************************************************************
+** setup for spatial analysis (spset, matricies, and spgenerate)
 *******************************************************************************
 
-log using "/Users/nathanielhugospilka/Documents/Thesis/quant_work/output/analyses/reg_results_2023-02-07.log"
+* checking the spatial features
+// spmap median_hh_inc using thesis_shapefile_2023-03-05_shp.dta if year == 2019, id(_ID) 
+// grmap median_hh_inc if year == 2019, t(2019)
 
-*******************************************************************************
-** simple regressions - crime_rate
-*******************************************************************************
+* creating an adjacency matrix for spatially lagged variables 
+* (0 = not adjacent; 1 = adjacent)
+spmatrix create contiguity adj_mat if year == 2019, replace
 
-regress crime_rate dycd_site, robust
+* creating an inverse distance matrix for spatially lagged variables 
+* (lower values = onjects are spatially closer)
+spmatrix create idistance idv_ma, replace
 
-xtreg crime_rate dycd_site, i(geoid) fe vce(robust)
-
-xtreg crime_rate dycd_site i.year, i(geoid) fe vce(robust)
-
-*******************************************************************************
-** regression with economic controls - crime_rate
-*******************************************************************************
-
-xtreg crime_rate dycd_site ///
-imputed_mhhi imputed_prcnt_unemp ///
-i.year, i(geoid) fe vce(robust)
-
-*******************************************************************************
-** regression with demographic controls - crime_rate
-*******************************************************************************
-
-xtreg crime_rate dycd_site ///
-total_pop /* prcnt_white */ prcnt_black prcnt_hisp prcnt_asian prcnt_all_other prcnt_yth_yng_adlt ///
-i.year, i(geoid) fe vce(robust)
-
-*******************************************************************************
-** regression with education controls - crime_rate
-*******************************************************************************
-
-xtreg crime_rate dycd_site ///
-/*prcnt_hs_no_ba_deg */ prcnt_hs_no_ba_deg prcnt_ba_or_hghr_deg ///
-i.year, i(geoid) fe vce(robust)
-
-*******************************************************************************
-** regression with all controls (full force) - crime_rate
-*******************************************************************************
-
-xtreg crime_rate dycd_site ///
-imputed_mhhi imputed_prcnt_unemp ///
-total_pop /* prcnt_white */ prcnt_black prcnt_hisp prcnt_asian prcnt_all_other prcnt_yth_yng_adlt ///
-/*prcnt_hs_no_ba_deg */ prcnt_hs_no_ba_deg prcnt_ba_or_hghr_deg ///
-i.year, i(geoid) fe vce(robust)
-
-*******************************************************************************
-** simple regressions - violent_crime_rate
-*******************************************************************************
-
-regress violent_crime_rate dycd_site, robust
-
-xtreg violent_crime_rate dycd_site, i(geoid) fe vce(robust)
-
-xtreg violent_crime_rate dycd_site i.year, i(geoid) fe vce(robust)
-
-*******************************************************************************
-** regression with economic controls - violent_crime_rate
-*******************************************************************************
-
-xtreg violent_crime_rate dycd_site ///
-imputed_mhhi imputed_prcnt_unemp ///
-i.year, i(geoid) fe vce(robust)
-
-*******************************************************************************
-** regression with demographic controls - violent_crime_rate
-*******************************************************************************
-
-xtreg violent_crime_rate dycd_site ///
-total_pop /* prcnt_white */ prcnt_black prcnt_hisp prcnt_asian prcnt_all_other prcnt_yth_yng_adlt ///
-i.year, i(geoid) fe vce(robust)
-
-*******************************************************************************
-** regression with education controls - violent_crime_rate
-*******************************************************************************
-
-xtreg violent_crime_rate dycd_site ///
-/*prcnt_hs_no_ba_deg */ prcnt_hs_no_ba_deg prcnt_ba_or_hghr_deg ///
-i.year, i(geoid) fe vce(robust)
-
-*******************************************************************************
-** regression with all controls (full force) - violent_crime_rate
-*******************************************************************************
-
-xtreg violent_crime_rate dycd_site ///
+* multivariate + year/entity FE
+xtreg logd_crime_rate all_site_type ///
 imputed_mhhi imputed_prcnt_unemp ///
 total_pop /* prcnt_white */ prcnt_black prcnt_hisp prcnt_asian prcnt_all_other prcnt_yth_yng_adlt ///
 /*prcnt_hs_no_ba_deg */ prcnt_hs_no_ba_deg prcnt_ba_or_hghr_deg ///
 i.year, i(geoid) fe vce(robust)
 
 
-log close
+estat moran, errorlag(adj_mat)
 
 
-translate /Users/nathanielhugospilka/Documents/Thesis/quant_work/output/analyses/reg_results_2023-02-07.smcl /Users/nathanielhugospilka/Documents/Thesis/quant_work/output/analyses/reg_results_2023-02-07.pdf, translator(smcl2pdf)
+spgenerate adj_crime = adj_mat * logd_crime_rate
+spgenerate idv_crime = idv_ma * logd_crime_rate
+
+
+
+
+xsmle !!
+
+
+
+
+
+
+
+
+
+
 
 
 

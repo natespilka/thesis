@@ -1,20 +1,43 @@
+# Nate Spilka
+# Date started: 2023-01-03
+# Description: This crosswalks, wrangles/cleans, interpolates, and imputes 
+# ACS data. Specifically, 2019 ACS data are crosswalked with 2020 due to the  
+# decennial census update. For more information about this step, visit: 
+# https://www.nhgis.org/geographic-crosswalks. Missing median household income 
+# values are interpolated with temporally neighboring values (of the same block
+# group). For values that were not interpolated, mhhi values were imputed using 
+# tidymodels. Regression, knn, and random forest models were used to identify 
+# the optimal strategy for imputation. Random forest took gold with the lowest 
+# rmse (justifying its usage for imputation). 
+
+# Note: For the purpose of my thesis, I only used my control variables when 
+# imputing median household income. 
+
 # clean environment -------------------------------------------------------
 
-# rm(list = ls(all.names = TRUE))
-# graphics.off()
-# cat("\014") 
-#Alt + Shift + K  == gets you all shortcuts
+rm(list = ls(all.names = TRUE))
+graphics.off()
+cat("\014")
 
 # load some packages ------------------------------------------------------
 
-# library(tidyverse)
-# library(tigris)
-# library(sf)
+library(tidyverse)
+library(sf)
 
-# load geospatial data ----------------------------------------------------
+# load NYC borough boundaries ---------------------------------------------
 
-# NYC borough boundaries. Suggested EPSG = 6539. Default shp EPSG should be 2263
+# url for API
+# url_borough_boundaries <- 'https://data.cityofnewyork.us/resource/7t3b-ywvw.json'
 
+# API query for NYC borough boundaries data
+# borough_boundries <- RSocrata::read.socrata(
+#   url_borough_boundaries,
+#   app_token = "###",
+#   email     = "nhs40@georgetown.edu",
+#   password  = "###")
+
+# NYC borough boundaries data. 
+# using an EPSG of 2263 since it's recommended for NY (https://epsg.io/2263). 
 borough_boundries <-
   st_read('data/raw/shapefiles/borough_boundries/geo_export_830dcae7-8918-4bbd-9062-5cfe61a5a1ac.shp') %>%
   st_transform(crs = 2263)
@@ -152,9 +175,10 @@ edu_vars <- c(
 
 # tidycensus pull ---------------------------------------------------------
 
+# acs years of interest
 years <- list(2019, 2020, 2021) 
 
-# pulling acs data
+# pulling NYC block group (bg) level ACS data (acs5) from 2019 to 2021
 acs_data <-
   map_dfr(
     years,
@@ -182,12 +206,15 @@ acs_data <-
       year == 2 ~ 2020,
       year == 3 ~ 2021))
 
-# crosswalk 2019 acs bgs to 2020 acs bgs ----------------------------------
+# crosswalk 2019 ACS bgs to 2020 ACS bgs ----------------------------------
+
+# crosswalk data can be found here: https://www.nhgis.org/geographic-crosswalks
+# Specifically, New York "2010 → 2020" "Block Groups → Block Groups" were used
 
 # load in crosswalk dataset and only use block-groups that are in 2020 census
 crosswalk <- 
   read_csv('data/raw/nhgis_crosswalk/nhgis_bg2010_bg2020_36/nhgis_bg2010_bg2020_36.csv') %>%
-  # we must mutate since the BG identifiers are numeric (not character)
+  # mutate since the bg identifiers are numeric (not character)
   mutate(geoid = as.character(bg2020ge)) %>%
   left_join(
     acs_data %>%
@@ -198,7 +225,7 @@ crosswalk <-
   select(bg2010gj:last_col()) %>%
   mutate(geoid = as.character(bg2010ge))
 
-#THERE ARE SOME NANS HERE - unsure exactly what's going on  but I think it's ok
+# only using 2019 acs data when we join it to our crosswalk above
 crossed_2019 <-
   acs_data %>%
   st_drop_geometry() %>%
@@ -208,12 +235,6 @@ crossed_2019 <-
     ., 
     by = 'geoid') %>%
   mutate(geoid = as.character(bg2020ge))
-
-# manipulation check
-# temp <- crossed_2019 %>%
-#   group_by(geoid) %>%
-#   summarise(
-#     n = n())
 
 # apply weights to appropriate columns
 crossed_2019_weighted <-
@@ -230,7 +251,7 @@ crossed_2019_weighted <-
       .fns = ~ . * wt_pop)) %>%
   select(year, geoid, name:last_col())
 
-# collapsing BGs using sum (median hh income is not included)
+# collapsing bgs using sum (median hh income is not included)
 crossed_2019_weighted_summed <- crossed_2019_weighted %>% 
   group_by(geoid) %>% 
   summarise(
@@ -252,12 +273,12 @@ weighted_inc <- crossed_2019_weighted %>%
   group_by(geoid) %>% 
   filter(
     !is.na(name)) %>%
-  # adding all employed people in a given BG
+  # adding all employed people in a given bg
   # finding the proportion of people for that given row in the given BG
   mutate(
     sum_of_people = sum(total_race_ethn_pop_e, na.rm = TRUE),
     relative_income_weight = total_race_ethn_pop_e / sum_of_people) %>% 
-  # collapsing income down by BG - weighted by relative_income_weight
+  # collapsing income down by bg - weighted by relative_income_weight
   summarise(
     med_hh_inc_e = sum(med_hh_inc_e * relative_income_weight, na.rm = TRUE),
     across()) %>% 
@@ -266,6 +287,7 @@ weighted_inc <- crossed_2019_weighted %>%
   na_if(., 0) %>% 
   ungroup()
 
+# combining our weighted income data and other crosswalked acs 2019 data
 wghted_adjstd_2019_acs_data <- weighted_inc %>% 
   select(year, geoid, name, med_hh_inc_e, med_hh_inc_m) %>% 
   left_join(
@@ -291,7 +313,7 @@ acs_data_2021 <-
       filter(year == 2021),
     by = 'geoid')
 
-# final acs dataset before the fancy treatment below
+# final acs dataset before the fancy treatment below (interpolation at end)
 acs_data_adjusted <- 
   bind_rows(
     wghted_adjstd_2019_acs_data,
@@ -299,10 +321,33 @@ acs_data_adjusted <-
       filter(year == 2020),
     acs_data_2021) %>% 
   group_by(geoid) %>% 
-  # interpolation
+  mutate(
+    med_hh_inc_e = case_when(
+      # interpolating from 2019 med_hh_inc_e
+      (!is.na(first(med_hh_inc_e)) & 
+         is.na(nth(med_hh_inc_e, 2)) & 
+         is.na(last(med_hh_inc_e))) ~ first(med_hh_inc_e),
+      # interpolating from 2020 med_hh_inc_e
+      (is.na(first(med_hh_inc_e)) & 
+         !is.na(nth(med_hh_inc_e, 2)) & 
+         is.na(last(med_hh_inc_e))) ~ nth(med_hh_inc_e, 2),
+      # interpolating from 2021 med_hh_inc_e
+      (is.na(first(med_hh_inc_e)) & 
+         is.na(nth(med_hh_inc_e, 2)) & 
+         !is.na(last(med_hh_inc_e))) ~ last(med_hh_inc_e),
+      # interpolating from 2019 and 2021 med_hh_inc_e - (creating the mean)
+      (!is.na(first(med_hh_inc_e)) &
+         is.na(nth(med_hh_inc_e, 2)) &
+         !is.na(last(med_hh_inc_e))) ~ if_else(
+           year == 2020, 
+           (first(med_hh_inc_e) + last(med_hh_inc_e))/2,
+           med_hh_inc_e),
+      # all other cases just throw in its own med_hh_inc_e
+      TRUE ~ med_hh_inc_e)) %>% 
+  # interpolation 2019 and 2021 from neighbors
   fill(
     med_hh_inc_e, unemployed_people_num_e, civ_labor_force_num_e,
-    .direction = 'downup') %>% 
+    .direction = 'downup') %>%
   ungroup()
 
 # convert counts into percents --------------------------------------------
@@ -367,68 +412,305 @@ acs_data_v2 <-
   st_filter(borough_boundries) %>%
   erase_water(area_threshold = .25)
 
+# imputation: prepping data for splits ------------------------------------
+
+library(tidymodels)
+
+# bgs outside the scope of the study
+central_prk <- '360610277001'
+rikers <- '360050001001'
+mnt_olv_cem <- '360810607011' # pop = 14
+cyp_hill_cem <- '360810561001' # pop = 17
+flyd_bnt_fld <- '360470702021' # pop = 8
+hly_crss_cem <- '360470852001' # pop = 26
+sth_frsh_klls_prk <- '360850228011' # pop = 21
+innwd_park <- '360610297001' # pop = 22
+brnx_zoo <- '360050334001' # pop = 15
+
+acs_data_ml <- acs_data_v2 %>% 
+  st_drop_geometry() %>%
+  group_by(geoid) %>% 
+  # booted = all geoids are knocked even if a single bg has pop == 0
+  mutate(
+    booted = if_else(
+      any(total_pop == 0),
+      1,
+      0),
+    geoid = as.numeric(geoid)) %>%
+  filter(
+    !is.na(median_hh_inc),
+    total_pop > 0,
+    booted == 0,
+    geoid != central_prk,
+    geoid != rikers,
+    geoid != mnt_olv_cem,
+    geoid != cyp_hill_cem,
+    geoid != flyd_bnt_fld,
+    geoid != hly_crss_cem,
+    geoid != sth_frsh_klls_prk,
+    geoid != innwd_park,
+    geoid != brnx_zoo) %>% 
+  # setting our id variable (entity_time)
+  ungroup() %>% 
+  mutate(
+    id = paste0(geoid, '_', year)) %>% 
+  select(id, year, median_hh_inc:prcnt_ba_or_hghr_deg)
+
+set.seed(20211101)
+# splitting data and trying to keep year relatively balanced
+acs_data_testing_split <- initial_split(
+  acs_data_ml, 
+  prop = .8,
+  strata = year) 
+
+# training and testing data split
+acs_data_train <- training(acs_data_testing_split) %>% 
+  select(-year)
+acs_data_test <- testing(acs_data_testing_split) %>% 
+  select(-year)
+  
+# recipe shenanigans ------------------------------------------------------
+
+# making our recipe: 
+acs_data_recipe <- recipe(median_hh_inc ~ ., data = acs_data_train) %>%
+  # setting our id variable (entity_time)
+  update_role(id, new_role = "id variable") %>%
+  #removes variables that are sparce and unbalanced
+  step_nzv(all_predictors()) %>%
+  #centers our variables
+  step_center(all_predictors()) %>% 
+  step_scale(all_predictors()) 
+
+# checking the recipe
+check_recipe <- 
+  bake(
+    prep(
+      acs_data_recipe, 
+      training = acs_data_train), 
+    new_data = acs_data_train)
+
+# set up resampling using 10-fold cross validation
+set.seed(20211102)
+folds <- vfold_cv(data = acs_data_train, v = 10, repeats = 1)
+  
+# regression model --------------------------------------------------------
+
+# setting linear regression model
+model_lm <- linear_reg() %>%
+  set_engine("lm")
+
+# setting workflow
+workflow_lm <- workflow() %>%
+  add_recipe(acs_data_recipe) %>%
+  add_model(model_lm) 
+
+# using the workflow, fit the model + folds
+resamples_lm <- workflow_lm %>%
+  fit_resamples(resamples = folds)
+
+# select the best model
+best_lm <- resamples_lm %>%
+  select_best("rmse")
+
+# finalizing the workflow using the best lm
+final_lm <- workflow_lm %>% 
+  finalize_workflow(parameters = best_lm)
+
+# fit to the training data and extract coefficients
+fit_lm <- final_lm %>%
+  fit(data = acs_data_train)
+
+# lm performance
+collect_metrics(resamples_lm) %>%
+  filter(.metric == "rmse") %>%
+  select(mean) %>%
+  pull(mean)
+
+# knn ---------------------------------------------------------------------
+
+# create a tuning grid for our knn
+grid_knn <- grid_regular(
+  neighbors(range = c(10, 25)), levels = 8)
+
+# create the knn model
+model_knn <- nearest_neighbor(neighbors = tune()) %>%
+  set_engine(engine = "kknn") %>%
+  set_mode(mode = "regression")
+
+# initiate the workflow
+workflow_knn <- workflow() %>%
+  add_model(spec = model_knn) %>%
+  add_recipe(recipe = acs_data_recipe)
+
+# we may run into issues here with conflicting libraries
+resampling_knn <- workflow_knn %>% 
+  tune_grid(
+    resamples = folds,
+    grid = grid_knn,
+    control = control_grid(save_pred = TRUE),
+    metrics = metric_set(rmse))
+
+# identifying the best hyper-parameter
+hyper_knn_best <- resampling_knn %>%
+  select_best("rmse")
+
+# finalize the workflow using the best model
+final_knn <- workflow_knn %>%
+  finalize_workflow(parameters = hyper_knn_best)
+
+# fitting the workflow with the original data
+fit_knn <- final_knn %>%
+  fit(acs_data_train)
+
+# applying the finalized workflow to the folds
+knn_fit_rs <- final_knn %>%
+  fit_resamples(resamples = folds)
+
+# model performance
+collect_metrics(knn_fit_rs)  
+  
+# random forests ----------------------------------------------------------
+
+# I would add more trees but the performance levels out at ~100
+# setting the number of trees/grid
+tree_nmbr <- 1
+grid_nmbr <- 1
+
+#since random forests can be computationally heavier, we use parallel processing
+cores <- parallel::detectCores()
+
+# rf with 1000 iterations, using parallel processing
+model_rf <- rand_forest(
+  mtry = tune(), 
+  min_n = tune(), 
+  trees = tree_nmbr) %>% 
+  set_engine(
+    engine = "ranger", 
+    num.threads = cores, 
+    importance = "impurity") %>%
+  set_mode("regression")
+
+# rf workflow
+workflow_rf <- workflow() %>% 
+  add_recipe(
+    recipe = acs_data_recipe) %>%
+  add_model(
+    spec = model_rf)
+
+# tune hyper-parameters using folds and the grid_nmbr above (this takes time)
+hyper_rf <- workflow_rf %>% 
+  tune_grid(
+    resamples = folds, 
+    grid = grid_nmbr,
+    control = control_grid(save_pred = TRUE))
+
+# identifying the best hyper-parameters (mtry = , min_n = )
+hyper_rf_best <- hyper_rf %>% 
+  select_best(metric = "rmse")
+
+# applying the best hyper-parameters
+hyper_rf_best_applied <- workflow_rf %>%
+  finalize_workflow(parameters = hyper_rf_best)
+
+# apply the worlflow when fitting the data
+fit_rf <- hyper_rf_best_applied %>%
+  last_fit(acs_data_testing_split)
+
+#fitting the workflow with the original data
+rf_final_fit <- hyper_rf_best_applied %>% 
+  fit(acs_data_train)
+
+# applying the updated workflow to the fit
+fit_rs_rf <- hyper_rf_best_applied %>%
+  fit_resamples(resamples = folds)
+
+# mean RMSE across the 10 samples
+collect_metrics(fit_rs_rf) %>%
+  filter(.metric == "rmse") %>%
+  select(mean) %>%
+  pull(mean)
+
+# these are the top ten variables of highest importance
+fit_rf %>%
+  extract_fit_parsnip() %>%
+  vip::vip(num_features = 10)
+
+# apply the best model to the testing data --------------------------------
+
+# using the random forest model since it has the best performance
+predictions_test <- bind_cols(
+  acs_data_test, 
+  predict(
+    object = rf_final_fit, 
+    new_data = acs_data_test))
+
+# checking the performance with our testing data
+rmse(
+  data = predictions_test, 
+  truth = acs_data_test$median_hh_inc, 
+  estimate = .pred)  
+
+# applying the model to our NAs: imputation -------------------------------
+
+# all median incomes that will be imputed
+to_be_imputed <- acs_data_v2 %>% 
+  st_drop_geometry() %>%
+  filter(
+    is.na(median_hh_inc),
+    total_pop > 0) %>% 
+  mutate(
+    id = paste0(geoid, '_', year),
+    # two observations have zeros for education
+    prcnt_no_hs_deg = ifelse(
+      is.na(prcnt_no_hs_deg),
+      0,
+      prcnt_no_hs_deg),
+    prcnt_hs_no_ba_deg = ifelse(
+      is.na(prcnt_hs_no_ba_deg),
+      0,
+      prcnt_hs_no_ba_deg),
+    prcnt_ba_or_hghr_deg = ifelse(
+      is.na(prcnt_ba_or_hghr_deg),
+      0,
+      prcnt_ba_or_hghr_deg)) %>% 
+  select(id, median_hh_inc:prcnt_ba_or_hghr_deg)
+
+# imputing the mhhi for those with NAs
+imputed_mhhi <- bind_cols(
+  to_be_imputed, 
+  predict(
+    object = rf_final_fit, 
+    new_data = to_be_imputed))
+
+# converting the id variable to geoid/year for the left_join below
+imputed_mhhi_2 <- bind_cols(
+  imputed_mhhi,
+  geoid = str_sub(imputed_mhhi$id, 1, 12),
+  year = as.numeric(
+    str_sub(imputed_mhhi$id, -4)))
+
+# merging/filling in appropriate mhhi NAs with the imputed values
+acs_data_v3 <- left_join(
+  acs_data_v2,
+  imputed_mhhi_2 %>% 
+    select(geoid, year, .pred),
+  by = c('geoid', 'year')) %>% 
+  mutate(
+    median_hh_inc = ifelse(
+      is.na(median_hh_inc) & !is.na(.pred),
+      .pred,
+      median_hh_inc)) %>% 
+  select(-.pred)
+
+# outcome -----------------------------------------------------------------
+
+# 1571 interpolated median household income values
+# 1 interpolated unemployment rate value
+# 400 imputed median household income values
+
 # save file as rds --------------------------------------------------------
 
-# write_rds(acs_data_v2, 'data/processed/acs_data_v2.rds')
-
-# manipulation checks -----------------------------------------------------
-
-# 360810638005 helped me correct the wrangling further upstream
-
-# mani_check_acs_2019 <-
-#   acs_data_v2 %>%
-#   filter(year == 2019)
-# 
-# mani_check_acs_2020 <-
-#   acs_data_v2 %>%
-#   filter(year == 2020)
-# 
-# mani_check_acs_2021 <-
-#   acs_data_v2 %>%
-#   filter(year == 2021)
-# 
-# # seeing the issues with 2021 data
-# outliers_2020_2021 <- 
-#   anti_join(
-#     mani_check_acs_2021 %>% 
-#       as_tibble(),
-#     mani_check_acs_2020 %>% 
-#       as_tibble(),
-#     by = 'geoid') %>% 
-#   select(geoid)
-# 
-# # 2021 geometry craps
-# outliers_2020_2021 %>% 
-#   ggplot() +
-#   geom_sf() +
-#   theme_void()
-# 
-# acs_data_v2 %>%
-#   filter(year == 2019) %>% 
-#   ggplot() +
-#   geom_sf() +
-#   theme_void()
-# 
-# acs_data_v2 %>%
-#   filter(year == 2020) %>% 
-#   ggplot() +
-#   geom_sf() +
-#   theme_void()
-# 
-# acs_data_v2 %>%
-#   filter(year == 2021) %>% 
-#   ggplot() +
-#   geom_sf() +
-#   theme_void()
-
-
-
-
-
-
-
-
-
+# write_rds(acs_data_v3, 'data/processed/acs_data_v3.rds')
 
 
 
